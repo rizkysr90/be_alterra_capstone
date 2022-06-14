@@ -1,4 +1,4 @@
-const dataUserAll = (req,res) => {
+const dataProductAll = (req,res) => {
     res.status(200).json({
         messege : 'Succcess'
     })
@@ -6,5 +6,5 @@ const dataUserAll = (req,res) => {
 
 
 module.exports = {
-    dataUserAll
+    dataProductAll
 }
