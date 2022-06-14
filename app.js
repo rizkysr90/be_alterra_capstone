@@ -3,14 +3,19 @@ const morgan = require('morgan')
 const express = require('express')
 const app = express()
 
-const router = require('./src/router/index')
+const router = require('./src/router/index');
 
 app.use(express.json());
 app.use(express.urlencoded({
     extended: true
 }))
 
+
 app.use(`${process.env.BASE_URL}`, router)
+
+app.all('*',(req,res) => {
+    res.status(404).json({message :"Sorry, page not found"});
+});
 
 
 app.use(morgan(function (tokens, req, res) {

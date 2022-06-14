@@ -1,13 +1,8 @@
 const express = require('express')
 const router = express.Router()
-// const controllerUser = require('../controller/controller.user')
+const controllerUser = require('../controller/controller.user')
 
-router.get('/', (req,res) => {
-    console.log('Hello Word')
-    res.status(200).json({
-        messenge : "Hello Word"
-    })
-})
+router.get('/', controllerUser.dataUserAll);
 
 
 module.exports = router
