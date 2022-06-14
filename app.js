@@ -3,10 +3,14 @@ const morgan = require('morgan')
 const express = require('express')
 const app = express()
 
+const router = require('./router/index')
+
 app.use(express.json());
 app.use(express.urlencoded({
     extended: true
 }))
+
+app.use(`${process.env.BASE_URL}`, router)
 
 
 app.use(morgan(function (tokens, req, res) {
