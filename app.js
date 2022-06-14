@@ -3,7 +3,7 @@ const morgan = require('morgan')
 const express = require('express')
 const app = express()
 
-const router = require('./router/index')
+const router = require('./src/router/index')
 
 app.use(express.json());
 app.use(express.urlencoded({
