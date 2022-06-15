@@ -11,15 +11,6 @@ module.exports = {
       price: {
         type: Sequelize.INTEGER
       },
-      product_id: {
-        type: Sequelize.INTEGER
-      },
-      buyer_id: {
-        type: Sequelize.INTEGER
-      },
-      seller_id: {
-        type: Sequelize.INTEGER
-      },
       status: {
         type: Sequelize.INTEGER
       },

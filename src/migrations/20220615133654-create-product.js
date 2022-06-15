@@ -23,12 +23,6 @@ module.exports = {
       status: {
         type: Sequelize.BOOLEAN
       },
-      id_user: {
-        type: Sequelize.INTEGER
-      },
-      id_category: {
-        type: Sequelize.INTEGER
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
