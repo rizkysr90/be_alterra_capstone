@@ -10,7 +10,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      const foreignKeyProductProductImage = {
+        foreignKey : 'product_id'
+      }
       // define association here
+      const Product = models.Product;
+      const ProductImage = models.Product_image;
+
+      Product.hasMany(ProductImage,foreignKeyProductProductImage);
+      ProductImage.belongsTo(Product,foreignKeyProductProductImage);
     }
   }
   Product_image.init({
