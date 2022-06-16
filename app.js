@@ -12,7 +12,6 @@ app.use(express.urlencoded({
 
 
 app.use(`${process.env.BASE_URL}`, router)
-
 app.all('*',(req,res) => {
     res.status(404).json({message :"Sorry, page not found"});
 });
@@ -29,4 +28,4 @@ app.use(morgan(function (tokens, req, res) {
   }))
 
 
-  module.exports = app
+module.exports = app
