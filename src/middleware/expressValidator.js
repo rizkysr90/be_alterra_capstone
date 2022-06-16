@@ -8,14 +8,17 @@ const validate = (req,res,next) => {
         if (!errors.isEmpty()) {
             // Semua data error disimpan di variabel errors.array()
             const dataErrorFromExpressValidator = errors.array();
-            res.status(400).json(response.error(400,dataErrorFromExpressValidator));
+            // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
+            return res.status(400).json(response.error(400,dataErrorFromExpressValidator));
         } else {
             // Jika tidak ada error,maka akan masuk ke controller
             next();
         }
 
     } catch (error) {
-        res.status(500).json(response.error(500,'Internal Server Error'))
+        console.log(error);
+        // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
+        return res.status(500).json(response.error(500,'Internal Server Error'))
     }
 }
 

@@ -6,7 +6,7 @@ const dataUserAll = (req,res) => {
         messege : 'Succcess'
     })
 }
-const createUser = async (req,res) => {
+const createUser = async (req,res,next) => {
     // Pakai try catch untuk handle error by server agar bisa ditangkap
     try {
         // Di req.body akan ada data = {email,password,name} untuk register
@@ -21,7 +21,9 @@ const createUser = async (req,res) => {
         // Jika ditemukan/true maka kembalikan response error dan jika false maka bisa membuat user
         if (findUserByEmail) {
             // response.error merupakan utility yang dibuat di folder utility/responseModel.js
-            res.status(400).json(response.error(400,'Email sudah digunakan'))
+            // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
+            return res.status(400).json(response.error(400,'Email sudah digunakan'));
+            
         }
         // Sebelum create user di database,password harus di enkripsi terlebih dahulu
         const hashedPassword = await bcrypt.hash(password);
@@ -37,17 +39,20 @@ const createUser = async (req,res) => {
             name : name
         }
         // Membuat user ke database
-        const createUser = User.create(dataToBeInsertToDatabase);
+        const createUser = await User.create(dataToBeInsertToDatabase);
         // Jika berhasil,buat data untuk diberikan pada response
         // data yang credential seperti password,email,address tidak usah dikirim di response
         // kecuali jika dibutuhkan
         const dataToBeSentToResponse = {
             id : createUser.id,
-            name : createUser.name,
+            name : createUser.name
         }
-        res.status(201).json(response.success(200,dataToBeSentToResponse));
+        // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
+        return res.status(201).json(response.success(201,dataToBeSentToResponse));
     } catch(err) {
-        res.status(500).json(response.error(500,'Internal Server Error'));
+        console.log(err);
+        // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
+        return res.status(500).json(response.error(500,'Internal Server Error'));
     }
     
 
