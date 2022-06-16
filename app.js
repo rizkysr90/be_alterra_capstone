@@ -4,20 +4,6 @@ const express = require('express')
 const app = express()
 
 const router = require('./src/router/index');
-
-app.use(express.json());
-app.use(express.urlencoded({
-    extended: true
-}))
-
-
-app.use(`${process.env.BASE_URL}`, router)
-
-app.all('*',(req,res) => {
-    res.status(404).json({message :"Sorry, page not found"});
-});
-
-
 app.use(morgan(function (tokens, req, res) {
     return [
         tokens.method(req, res),
@@ -27,6 +13,19 @@ app.use(morgan(function (tokens, req, res) {
         tokens['response-time'](req, res), 'ms'
       ].join(' ')
   }))
+app.use(express.json());
+app.use(express.urlencoded({
+    extended: true
+}))
 
 
-  module.exports = app
+app.use(`${process.env.BASE_URL}`, router)
+app.all('*',(req,res) => {
+    res.status(404).json({message :"Sorry, page not found"});
+});
+
+
+
+
+
+module.exports = app
