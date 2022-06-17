@@ -18,7 +18,13 @@ module.exports = {
     "password": process.env.STAGING_DB_PASSWORD,
     "database": process.env.STAGING_DB_DATABASE,
     "host": process.env.STAGING_DB_HOST,
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "dialectOptions" : {
+      "ssl" : {
+        "require" : true,
+        "rejectUnauthorized" : false
+      }
+    }
   },
   "production": {
     "username": process.env.PROD_DB_USERNAME,
