@@ -18,8 +18,11 @@ app.use(express.urlencoded({
     extended: true
 }))
 
-
+app.get('/',(req,res) => {
+    res.status(200).send('Hello FEJS1 X BEJS2')
+})
 app.use(`${process.env.BASE_URL}`, router)
+
 app.all('*',(req,res) => {
     res.status(404).json({message :"Sorry, page not found"});
 });

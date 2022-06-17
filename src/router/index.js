@@ -17,9 +17,7 @@ router.use(`${process.env.URL_ROUTER_PROFILE}`,routerProfile)
 // router.use(`${process.env.URL_ROUTER_CATEGORIES}`, routerCategories)
 // router.use(`${process.env.URL_ROUTER_PRODUCTIMAGES}`, routerProductImages)
 // router.use(`${process.env.URL_ROUTER_TRANSACTIONS}`, routerProductImages)
-router.use('/',(req,res) => {
-    res.status(200).json(response.success(200,'Hello World'))
-})
+
 
 
 
