@@ -8,7 +8,15 @@ const create = () => {
         body('email','Email tidak valid').isEmail()
     ]
 }
+const login = () => {
+    return [
+        body('email','email wajib diisi').notEmpty(),
+        body('password','password wajib diisi').notEmpty(),
+        body('email','email tidak valid').isEmail()
+    ]
+}
 
 module.exports = {
-    create 
+    create,
+    login
 }

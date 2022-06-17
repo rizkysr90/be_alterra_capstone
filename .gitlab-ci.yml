@@ -1,0 +1,12 @@
+stages:
+  - deploy to staging server
+
+deploy:
+  stage: deploy to staging server
+  image: ruby:latest
+  only:
+    - development
+  before_script:
+    - gem install dpl
+  script:
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME_STAGING --api-key=$HEROKU_API_KEY
