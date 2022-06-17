@@ -1,12 +1,13 @@
 const {User} = require('./../models/');
 const response = require('./../utility/responseModel');
 const bcrypt = require('../utility/bcrypt');
+const issueJWT = require('../utility/issueJwt');
 const dataUserAll = (req,res) => {
     res.status(200).json({
         messege : 'Succcess'
     })
 }
-const createUser = async (req,res,next) => {
+const createUser = async (req,res) => {
     // Pakai try catch untuk handle error by server agar bisa ditangkap
     try {
         // Di req.body akan ada data = {email,password,name} untuk register
@@ -54,14 +55,60 @@ const createUser = async (req,res,next) => {
         // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
         return res.status(500).json(response.error(500,'Internal Server Error'));
     }
-    
+}
+const login = async (req,res) => {
+    try {
+        const {email,password} = req.body;
+        const findUser = await User.findOne({
+            where : {
+                email
+            }
+        });
+        if (!findUser) {
+            return res.status(404).json(response.error(404,"User not found"));
+        }
+        const verifyPassword = await bcrypt.compare(password,findUser.password);
+        if (!verifyPassword) {
+            return res.status(400).json(response.error(400,"Password tidak sesuai"));
+        }
+        const jwt = issueJWT(findUser);
+        return res.status(200).json(response.success(200,jwt));
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json(response.error(500,'Internal Server Error'));
+    }
+}
+const updateProfile = (req,res) => {
 
-
+}
+const getProfileById = async (req,res) => {
+    try {
+        const {user_id} = req.params;
+        // user_id secara default string
+        const options = {
+            attributes: {exclude: ['password','updatedAt']},
+            where : {
+                id : +user_id
+            }
+        };
+        const findUser = await User.findOne(options);
+        if (!findUser) {
+            return res.status(404).json(response.error(404,"User not found"))
+        }
+        return res.status(200).json(response.success(200,findUser))
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json(response.error(500,'Internal Server Error'));
+    }
+   
 
 }
 
 
 module.exports = {
     dataUserAll,
-    createUser
+    createUser,
+    login,
+    updateProfile,
+    getProfileById
 }
