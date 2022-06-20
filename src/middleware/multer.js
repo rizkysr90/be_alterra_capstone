@@ -6,10 +6,10 @@ const MulterError = (err, req, res, next) => {
     // Mendapatkan Error multer dari filed MulterError
     if (err instanceof multer.MulterError) {
         if (err.code.error === 'LIMIT_UNEXPECTED_FILE') {
-            res.status(400).json(response.error(400,err.code.message));
+            return res.status(400).json(response.error(400,err.code.message));
         }
     } else if (err) {
-        res.status(500).json(response.error(500,'Internal Server Error'))
+        return res.status(500).json(response.error(500,'Internal Server Error'))
     }
     next()
 }
@@ -32,6 +32,7 @@ const fileFilterImage = (req,file,cb) => {
     cb(new multer.MulterError(multerErrorOption),false);
 } 
 const MulterImgSingle = multer({
+    dest: 'uploads/',
     fileFilter:fileFilterImage
 })
 
