@@ -58,19 +58,24 @@ const createUser = async (req,res) => {
 }
 const login = async (req,res) => {
     try {
+        // Di request body ada data email dan password
         const {email,password} = req.body;
+        // Mencari user dengan email yang diberikan oleh user
         const findUser = await User.findOne({
             where : {
                 email
             }
         });
         if (!findUser) {
+            // Kalau pencarian user tidak ketemu,maka akan merespon dengan 404
             return res.status(404).json(response.error(404,"User not found"));
         }
+        // Jika pencarian ketemu,maka dicompare passwordnya dengan hashnya
         const verifyPassword = await bcrypt.compare(password,findUser.password);
         if (!verifyPassword) {
             return res.status(400).json(response.error(400,"Password tidak sesuai"));
         }
+        // Jika password sesuai,server membuat jwt token untuk authorization
         const jwt = issueJWT(findUser);
         return res.status(200).json(response.success(200,jwt));
     } catch (err) {
@@ -86,6 +91,7 @@ const getProfileById = async (req,res) => {
         const {user_id} = req.params;
         // user_id secara default string
         const options = {
+            // Exclude berarti saat mengembalikan response,tidak ada data password dan updatedAt
             attributes: {exclude: ['password','updatedAt']},
             where : {
                 id : +user_id
