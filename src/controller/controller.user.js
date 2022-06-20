@@ -84,6 +84,7 @@ const login = async (req,res) => {
     }
 }
 const updateProfile = (req,res) => {
+    // console.log(req.file);
 
 }
 const getProfileById = async (req,res) => {
