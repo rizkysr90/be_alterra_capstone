@@ -87,9 +87,10 @@ const login = async (req,res) => {
 const updateProfile = async (req,res) => {
     try {
         // console.log(req.params);
+        const dataUserFromJWT = req.user
         const {user_id} = req.params;
         // Cek apakah user yang request dengan params user_id sesuai dengan user_id di jwt (req.user.id)
-        if (!(+user_id === req.user.id)) {
+        if (!(+user_id === dataUserFromJWT.id)) {
             return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
         }
         // Cek apakah request mengirimkan sebuah file upload atau tidak
@@ -133,6 +134,13 @@ const updateProfile = async (req,res) => {
                 }
                 
             })
+            // Menghapus foto profile lama setelah diganti dengan yang baru
+            // Kita bisa mendapatkan data foto profile lama dari user yang login melewati jwt
+            // console.log(dataUserFromJWT)
+            // Melakukan penghapusan resource di cld
+            await cloudinary.uploader.destroy(dataUserFromJWT.profile_picture_id, {
+                resource_type : "image"
+            });
             return res.status(200).json(response.success(200,"Success update data"));
         }
     } catch (error) {
