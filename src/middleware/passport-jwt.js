@@ -22,6 +22,7 @@ const strategy = new JwtStrategy(optionsForDecodeJWT,async (payload,done) => {
         }
         return done(null,foundUser);
     } catch (error) {
+        console.log(error);
         return done(error,false);
     }
 })

@@ -88,6 +88,11 @@ const updateProfile = async (req,res) => {
     try {
         // console.log(req.params);
         const {user_id} = req.params;
+        // Cek apakah user yang request dengan params user_id sesuai dengan user_id di jwt (req.user.id)
+        if (!(+user_id === req.user.id)) {
+            return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
+        }
+        // Cek apakah request mengirimkan sebuah file upload atau tidak
         if (req.file === undefined) {
             // Menghapus sequelize profile_picture field di model User,agar tidak mengupdate
             // profile_picture saat value data dari req.file === undefined / user tidak memasukkan file
@@ -113,24 +118,23 @@ const updateProfile = async (req,res) => {
             });
             console.log(uploadImageResponse);
             // Mendestructuring publicId sebagai profile_picture_id,dan url hasil optimisasi gambar
-            const {public_id,eager : {secure_url}} = uploadImageResponse;
+            const {public_id,eager} = uploadImageResponse;
+            // eager is the result of optimization image
+            const secure_url = eager[0].secure_url;
             // let fieldsToUpdate = ["profile_picture","public_name","phone_number","address","name","city_id","profile_picture_id"];
             // Menambahkan profile_picture dan profile_picture_id ke sequelize database values
             req.body.profile_picture = secure_url;
             req.body.profile_picture_id = public_id;
+            console.log(req.body);
             // Update user
-            User.update(req.body,{
+            await User.update(req.body,{
                 where : {
                     id : +user_id
                 }
+                
             })
+            return res.status(200).json(response.success(200,"Success update data"));
         }
-        // const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-        //     resource_type: "image",
-        //     folder: "secondhand_app/image/profile_picture"
-
-        // });
-        // console.log(uploadResult);
     } catch (error) {
         console.log(error);
         res.status(500).json(response.error(500,'Internal Server Error'))

@@ -1,11 +1,10 @@
 const jsonwebtoken = require('jsonwebtoken');
 
 const issueJWT = (user) => {
-    const expiresIn = '1 days';
+    const expiresIn = "1 days";
     const payload = {
         sub: user.id,
         name : user.name,
-        iat: Date.now()
     };
     const signedToken = jsonwebtoken.sign(payload, process.env.JWT_SECRET, { expiresIn: expiresIn });
     return {
