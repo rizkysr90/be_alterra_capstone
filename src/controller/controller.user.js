@@ -2,6 +2,7 @@ const {User} = require('./../models/');
 const response = require('./../utility/responseModel');
 const bcrypt = require('../utility/bcrypt');
 const issueJWT = require('../utility/issueJwt');
+const cloudinary = require('../middleware/cloudinary');
 const dataUserAll = (req,res) => {
     res.status(200).json({
         messege : 'Succcess'
@@ -58,19 +59,24 @@ const createUser = async (req,res) => {
 }
 const login = async (req,res) => {
     try {
+        // Di request body ada data email dan password
         const {email,password} = req.body;
+        // Mencari user dengan email yang diberikan oleh user
         const findUser = await User.findOne({
             where : {
                 email
             }
         });
         if (!findUser) {
+            // Kalau pencarian user tidak ketemu,maka akan merespon dengan 404
             return res.status(404).json(response.error(404,"User not found"));
         }
+        // Jika pencarian ketemu,maka dicompare passwordnya dengan hashnya
         const verifyPassword = await bcrypt.compare(password,findUser.password);
         if (!verifyPassword) {
             return res.status(400).json(response.error(400,"Password tidak sesuai"));
         }
+        // Jika password sesuai,server membuat jwt token untuk authorization
         const jwt = issueJWT(findUser);
         return res.status(200).json(response.success(200,jwt));
     } catch (err) {
@@ -78,7 +84,69 @@ const login = async (req,res) => {
         return res.status(500).json(response.error(500,'Internal Server Error'));
     }
 }
-const updateProfile = (req,res) => {
+const updateProfile = async (req,res) => {
+    try {
+        // console.log(req.params);
+        const dataUserFromJWT = req.user
+        const {user_id} = req.params;
+        // Cek apakah user yang request dengan params user_id sesuai dengan user_id di jwt (req.user.id)
+        if (!(+user_id === dataUserFromJWT.id)) {
+            return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
+        }
+        // Cek apakah request mengirimkan sebuah file upload atau tidak
+        if (req.file === undefined) {
+            // Menghapus sequelize profile_picture field di model User,agar tidak mengupdate
+            // profile_picture saat value data dari req.file === undefined / user tidak memasukkan file
+            let fieldsToUpdate = ["phone_number","address","name","city_id"];
+            // Update user dimana id sama dengan user_id
+            User.update(req.body,{
+                where : {
+                    id : +user_id
+                },
+                fields : fieldsToUpdate
+            })
+            // Jika berhasil response 200 / succes
+            return res.status(200).json(response.success(200,"Success update data"));
+        } else {
+            // upload image yang sudah dioptimasi ke cld
+            // referensi docs -> https://cloudinary.com/documentation/image_upload_api_reference#upload_examples
+            const uploadImageResponse = await cloudinary.uploader.upload(req.file.path, {
+                resource_type: "image",
+                folder: "secondhand_app/image/profile_picture",
+                eager_async: true,
+                eager : {quality: 50}
+    
+            });
+            console.log(uploadImageResponse);
+            // Mendestructuring publicId sebagai profile_picture_id,dan url hasil optimisasi gambar
+            const {public_id,eager} = uploadImageResponse;
+            // eager is the result of optimization image
+            const secure_url = eager[0].secure_url;
+            // let fieldsToUpdate = ["profile_picture","public_name","phone_number","address","name","city_id","profile_picture_id"];
+            // Menambahkan profile_picture dan profile_picture_id ke sequelize database values
+            req.body.profile_picture = secure_url;
+            req.body.profile_picture_id = public_id;
+            console.log(req.body);
+            // Update user
+            await User.update(req.body,{
+                where : {
+                    id : +user_id
+                }
+                
+            })
+            // Menghapus foto profile lama setelah diganti dengan yang baru
+            // Kita bisa mendapatkan data foto profile lama dari user yang login melewati jwt
+            // console.log(dataUserFromJWT)
+            // Melakukan penghapusan resource di cld
+            await cloudinary.uploader.destroy(dataUserFromJWT.profile_picture_id, {
+                resource_type : "image"
+            });
+            return res.status(200).json(response.success(200,"Success update data"));
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(response.error(500,'Internal Server Error'))
+    }
 
 }
 const getProfileById = async (req,res) => {
@@ -86,6 +154,7 @@ const getProfileById = async (req,res) => {
         const {user_id} = req.params;
         // user_id secara default string
         const options = {
+            // Exclude berarti saat mengembalikan response,tidak ada data password dan updatedAt
             attributes: {exclude: ['password','updatedAt']},
             where : {
                 id : +user_id
