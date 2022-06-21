@@ -99,7 +99,7 @@ const updateProfile = async (req,res) => {
             // profile_picture saat value data dari req.file === undefined / user tidak memasukkan file
             let fieldsToUpdate = ["phone_number","address","name","city_id"];
             // Update user dimana id sama dengan user_id
-            User.update(req.body,{
+            await User.update(req.body,{
                 where : {
                     id : +user_id
                 },
@@ -117,7 +117,6 @@ const updateProfile = async (req,res) => {
                 eager : {quality: 50}
     
             });
-            console.log(uploadImageResponse);
             // Mendestructuring publicId sebagai profile_picture_id,dan url hasil optimisasi gambar
             const {public_id,eager} = uploadImageResponse;
             // eager is the result of optimization image
@@ -126,7 +125,6 @@ const updateProfile = async (req,res) => {
             // Menambahkan profile_picture dan profile_picture_id ke sequelize database values
             req.body.profile_picture = secure_url;
             req.body.profile_picture_id = public_id;
-            console.log(req.body);
             // Update user
             await User.update(req.body,{
                 where : {
@@ -138,9 +136,12 @@ const updateProfile = async (req,res) => {
             // Kita bisa mendapatkan data foto profile lama dari user yang login melewati jwt
             // console.log(dataUserFromJWT)
             // Melakukan penghapusan resource di cld
-            await cloudinary.uploader.destroy(dataUserFromJWT.profile_picture_id, {
-                resource_type : "image"
-            });
+            if (dataUserFromJWT.profile_picture_id) {
+                await cloudinary.uploader.destroy(dataUserFromJWT.profile_picture_id, {
+                    resource_type : "image"
+                });
+            }
+            
             return res.status(200).json(response.success(200,"Success update data"));
         }
     } catch (error) {
