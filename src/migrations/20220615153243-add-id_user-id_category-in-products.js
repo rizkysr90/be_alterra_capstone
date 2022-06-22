@@ -33,6 +33,6 @@ module.exports = {
     // Menghapus colom id_user di tabel products
     await queryInterface.removeColumn('Products','id_user');
     // Menghapus colom id_cateogry di tabel products
-    await queryInterface.removeColumn('Products','id_categories');
+    await queryInterface.removeColumn('Products','id_category');
   }
 };
