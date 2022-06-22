@@ -1,4 +1,4 @@
-const {User} = require('./../models/');
+const {User,City} = require('./../models/');
 const fs = require('fs');
 const response = require('./../utility/responseModel');
 const bcrypt = require('../utility/bcrypt');
@@ -163,6 +163,10 @@ const getProfileById = async (req,res) => {
             attributes: {exclude: ['password','updatedAt']},
             where : {
                 id : +user_id
+            },
+            include : {
+                model : City,
+                attributes: {exclude: ['createdAt','updatedAt']}
             }
         };
         const findUser = await User.findOne(options);
