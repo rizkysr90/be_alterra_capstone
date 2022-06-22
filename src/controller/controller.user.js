@@ -1,4 +1,5 @@
 const {User} = require('./../models/');
+const fs = require('fs');
 const response = require('./../utility/responseModel');
 const bcrypt = require('../utility/bcrypt');
 const issueJWT = require('../utility/issueJwt');
@@ -141,11 +142,14 @@ const updateProfile = async (req,res) => {
                     resource_type : "image"
                 });
             }
-            
+            // Delete file uploaded by multer in ~/public/static/images
+            fs.unlinkSync(req.file.path);
             return res.status(200).json(response.success(200,"Success update data"));
         }
     } catch (error) {
         console.log(error);
+        // Delete file uploaded by multer in ~/public/static/images
+        fs.unlinkSync(req.file.path);
         res.status(500).json(response.error(500,'Internal Server Error'))
     }
 
