@@ -1,5 +1,18 @@
 const multer = require('multer');
 const response = require('./../utility/responseModel');
+const fs = require('fs');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const fileLocation = './public/static/images';
+        if (!fs.existsSync(fileLocation)) fs.mkdirSync(fileLocation, { recursive: true });
+        cb(null, fileLocation);
+    },
+    filename: (req, file, cb) => {
+        const fileType = file.mimetype.split('/')[1];
+        cb(null, + Date.now() + '-' + file.fieldname + `.${fileType}`);
+    }
+});
 
 const MulterError = (err, req, res, next) => {
     console.log(err);
@@ -32,7 +45,7 @@ const fileFilterImage = (req,file,cb) => {
     cb(new multer.MulterError(multerErrorOption),false);
 } 
 const MulterImgSingle = multer({
-    dest: 'uploads/',
+    storage: storage,
     fileFilter:fileFilterImage
 })
 

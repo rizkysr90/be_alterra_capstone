@@ -16,6 +16,8 @@ const validate = (req,res,next) => {
         }
 
     } catch (error) {
+        // Delete file uploaded by multer(previous middleware) in ~/public/static/images
+        fs.unlinkSync(req.file.path);
         console.log(error);
         // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
         return res.status(500).json(response.error(500,'Internal Server Error'))
