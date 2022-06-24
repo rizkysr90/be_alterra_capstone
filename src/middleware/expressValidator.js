@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const response = require('./../utility/responseModel');
+const fs = require('fs')
 
 const validate = (req,res,next) => {
     try {
@@ -7,7 +8,9 @@ const validate = (req,res,next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // Delete file uploaded by multer(previous middleware) in ~/public/static/images
-            fs.unlinkSync(req.file.path);
+            if (req.file) {
+                fs.unlinkSync(req.file.path);
+            }
             // Semua data error disimpan di variabel errors.array()
             const dataErrorFromExpressValidator = errors.array();
             // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
