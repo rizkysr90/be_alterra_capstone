@@ -7,7 +7,7 @@ cloudinary.config({
     api_secret: `${process.env.CLOUDINARY_API_SECRET}` 
   });
 
-exports.uploadCloudinary = async (file) => {
+ const uploadCloudinary = async (file) => {
     const uploadResult = await cloudinary.v2.uploader.upload(file, {
         resource_type: "image",
         folder: `Secondhand_app/Product/image/`
@@ -15,4 +15,18 @@ exports.uploadCloudinary = async (file) => {
 
     return uploadResult
 
+}
+
+const deleteCloudinary = async (file) => {
+    const deleteResult = await cloudinary.v2.uploader.destroy(file, {
+        resource_type: "image",
+        folder: `Secondhand_app/Product/image/`
+    })
+
+    return deleteResult
+}
+
+module.exports = {
+    uploadCloudinary,
+    deleteCloudinary
 }
