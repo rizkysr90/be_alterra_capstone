@@ -219,6 +219,7 @@ const updateDataProduct = async (req, res) => {
         // deklarasi gambar yang telah di input user
         const files = req.files;
 
+        // opsi untuk mengupdate data pada product
         const options = {
                 name: name,
                 price: price,
@@ -229,10 +230,12 @@ const updateDataProduct = async (req, res) => {
                 // id_category: id_category
         }
 
+        // menangkap jika tidak ada gambar yang dimasukan
         if (files.length === 0) {
             // error headling jika gambar yang dimasukan tidak ada tau lebih dari 4
             if (files.length > 4) return res.status(401).json(response.error(401, 'Gambar yang di masukan lebih dari 4'))
             
+            // melakukan update pada tabel product sesuai id yang dimasukan
             const updateByProduct = await Product.update(options,
                 {
                     where: {
@@ -244,19 +247,27 @@ const updateDataProduct = async (req, res) => {
             if (updateByProduct === 0) {
                 return res.status(404).json(response.success(404,'Data Product Gagal Di Perbarui'))
             }
+
+            // response jika semua proses berhasil
+            return res.status(200).json(response.success(200,'Data Product Berhasil Di Perbarui'))
         }
 
-        // const updateByProduct = await Product.update(options,
-        //     {
-        //         where: {
-        //             id: id_product
-        //         }
-        //     }
-        // )
-        // if (updateByProduct === 0) {
-        //     return res.status(404).json(response.success(404,'Data Product Gagal Di Perbarui'))
-        // }
 
+        // update data Product jika user memasukan gambar
+        const updateByProduct = await Product.update(options,
+            {
+                where: {
+                    id: id_product
+                }
+            }
+        )
+
+        // error headling jika data product gagal dibuat
+        if (updateByProduct === 0) {
+            return res.status(404).json(response.success(404,'Data Product Gagal Di Perbarui'))
+        }
+
+        // mengecek semua data product image dengan product_id yang sesuai dengan inputan user
         const dataProductImage = await Product_image.findAll({
             where:{
                 product_id: id_product
@@ -264,24 +275,19 @@ const updateDataProduct = async (req, res) => {
         })
 
         
-        // untuk mendeklarasikan fungsi yang berada di cloudinary dengan async await 
+        // untuk mendeklarasikan fungsi upload dan delete gambar yang berada di cloudinary dengan async await 
         const uploader = async (path) => await cloudinary.uploadCloudinary(path)
         const deletee = async (path) => await cloudinary.deleteCloudinary(path)
         
-        const dataMyProductImagesUpdateDatabase = []
-        const dataImageProductInCoudinary = []
-        
+        // menghapus image product yang berada di cloudinary
         for(const data of dataProductImage ){
-            dataImageProductInCoudinary.push(data.product_image_id)
+            await deletee(data.product_image_id)
         }
-         for(const file of files){
 
-            const {product_image_id} = dataProductImage;
+        // membuat variabel untuk menampung data product image yang ingin di update 
+        const dataMyProductImagesUpdateDatabase = []
 
-            dataImageProductInCoudinary.push(product_image_id)
-
-            console.log(dataImageProductInCoudinary)
-            return
+         for(const file of files){    
              // Mengambil lokasi file lalu mendeklarasikan ke variabel
              const {path} = file;
              // Mengambil name file lalu mendeklarasikan ke variabel
@@ -292,33 +298,46 @@ const updateDataProduct = async (req, res) => {
              const newpath = await uploader(path)
               // Mengambil url_gambar product lalu mendeklarasikan ke variabel
              const {secure_url, public_id} = newpath
+
+             // menghapus file gambar setelah data gambar yang diperlukan telah disimpan di server agar tidak menyimpan banyak penyimpanan
+            fs.unlinkSync(path)
  
              dataMyProductImagesUpdateDatabase.push({
                  name: nameImg,
                  url_image: secure_url,
-                 product_id: createProduct.id,
+                 product_id: id_product,
                 product_image_id: public_id
              })
-
-            deletee(path)
              
          }
 
-         const updataImagesProduct = await Product_image.update(dataMyProductImagesUpdateDatabase, {
-              where: {
-                 id: [id_product]
-              }
-          })
+         // menghapus terlebih dahulu semua image productnya
+         const DeleteProductImage = await Product_image.destroy({
+             where: {
+                 product_id: [id_product]
+             }
+         })
+         
+         // Error headling jika data gagal dibuat
+         if (DeleteProductImage === 0) {
+            return res.status(404).json(response.error(404,'Data gambar Product gagal Di Perbarui'))
+         }
+
+         // membuat product image sesuai id 
+         const updataImagesProduct = await Product_image.bulkCreate(dataMyProductImagesUpdateDatabase)
  
+          // Error headling jika data gagal dibuat
           if (updataImagesProduct === 0) {
              return res.status(404).json(response.error(404,'Data gambar Product gagal Di Perbarui'))
           }
 
+        // response jika semua proses berhasil
         return res.status(200).json(response.success(200,'Data Product Berhasil Di Perbarui'))
 
     }catch(err){
         console.log(err)
 
+        // response error jika proses gagal
         return res.status(500).json(response.error(500,'Internal Server Error'));
     }
 }
@@ -375,7 +394,7 @@ const deleteDataProductById = async (req, res) => {
         // opsi untuk menghapus data product dengan berdasarkan id yang sama
         const options = {
             where: {
-                id: id_Product
+                id: [id_Product]
             }
         }
 
