@@ -99,6 +99,7 @@ const updateProfile = async (req,res) => {
         const {user_id} = req.params;
         // Cek apakah user yang request dengan params user_id sesuai dengan user_id di jwt (req.user.id)
         if (!(+user_id === dataUserFromJWT.id)) {
+            fs.unlinkSync(req.file.path);
             return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
         }
         // Cek apakah request mengirimkan sebuah file upload atau tidak

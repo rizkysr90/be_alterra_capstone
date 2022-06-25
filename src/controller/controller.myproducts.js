@@ -1,9 +1,17 @@
 const { Product } = require('../models')
-const { Product_image,User } = require('../models');
+const { Product_image,User,Category } = require('../models');
 const response = require('../utility/responseModel');
 const cloudinary = require('../utility/cloudinary');
 const pagination = require('./../utility/pagination');
 const fs = require('fs')
+const removeFileUploadedByMulter = (files) => {
+    if (files || files.length !== 0) {
+        files.forEach((file) => {
+            fs.unlinkSync(file.path);
+        })
+    }
+    
+}
 
 
 const dataProductAll = async (req, res) => {
@@ -30,6 +38,9 @@ const dataProductAll = async (req, res) => {
                         {
                             model : User,
                             attributes: {exclude: ['phone_number','email','password','updatedAt']},
+                        },
+                        {
+                            model : Category
                         }
                     ],
             // membuat pagination 
@@ -86,6 +97,9 @@ const dataProductById = async (req, res) => {
                         {
                             model : User,
                             attributes: {exclude: ['phone_number','email','password','updatedAt']},
+                        },
+                        {
+                            model : Category,
                         }
                     ]
         }
@@ -109,8 +123,19 @@ const dataProductById = async (req, res) => {
 const createDataProduct = async (req, res) => {
     try{
         // mengambil data user dari jwt
-        const dataUserFromJWT = req.user
-        
+        const dataUserFromJWT = req.user.dataValues
+        // validasi sesuai requirement,apakah profile user yang mau upload produk
+        // sudah lengkap atau belum
+        for (let props in dataUserFromJWT) {
+            if (dataUserFromJWT[props] === null){
+                const requiredData = ["phone_number","address","name","city_id"]
+                if (requiredData.includes(props)) {
+                    // Function remove ada dipaling atas
+                    removeFileUploadedByMulter(req.files);
+                    return res.status(401).json(response.error(401,'Anda tidak memiliki akses,lengkapi profile terlebih dahulu'));
+                }
+            }
+        }
         // deklarasi variabel yang telah dinputkan oleh user untuk database product
         const {name, price, description, isActive, status, id_user, id_category} = req.body
 
@@ -119,6 +144,8 @@ const createDataProduct = async (req, res) => {
         
         // error headling jika gambar yang dimasukan tidak ada tau lebih dari 4
         if (files.length > 4 || files.length === 0) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             return res.status(401).json(response.error(401, 'Gambar yang di masukan tidak boleh kosong dan lebih dari 4'))
         }
 
@@ -130,17 +157,32 @@ const createDataProduct = async (req, res) => {
             isActive: isActive,
             status: status,
             id_user: id_user,
-            // id_category: id_category
+            id_category: id_category
         }
         // Melakukan validasi apakah user yang mengupload produk = user yang login
         if (id_user !== dataUserFromJWT.id ) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
+        }
+        // Melakukan validasi apakah category dengan id_category ada didatabase
+        const findCategory = await Category.findOne({
+            where : {
+                id : id_category
+            }
+        })
+        if (!findCategory) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
+            return res.status(400).json(response.error(400,'id_category tidak valid / tidak ditemukan'));
         }
         // Membuat Product ke database
         const createProduct = await Product.create(dataMyProductInsertDatabase)
         
         // error headling jika database product gagal di buat di database
         if (!createProduct) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             return res.status(404).json(response.error(404,'Data Product Gagal dibuat'));
         }
         
@@ -188,6 +230,8 @@ const createDataProduct = async (req, res) => {
         const createImagesProduct = await Product_image.bulkCreate(dataMyProductImagesInsertDatabase)
 
         if (!createImagesProduct) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             res.status(404).json(response.error(404, 'Data Images Product Gagal Dibuat'))
         }
 
@@ -212,7 +256,8 @@ const createDataProduct = async (req, res) => {
     }catch(err){
         // menampilkan error pada console log
         console.log(err)
-
+        // Function remove ada dipaling atas
+        removeFileUploadedByMulter(req.files);
         // response error jika proses gagal
         return res.status(500).json(response.error(500,'Internal Server Error'));
     }
@@ -238,6 +283,8 @@ const updateDataProduct = async (req, res) => {
     
         // mengakap error headling jika params id yang dimasukan user tidak ada
         if (idnull === null){
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             return res.status(401).json(response.error(401,`id ${id_product} Tidak Ditemukan`));
         }  
 
@@ -260,17 +307,25 @@ const updateDataProduct = async (req, res) => {
         // Melakukan validasi apakah user yang mengupdate produk merupakan pemilik produk tersebut
         // idnull merupakan data produk yang dipakai saat mengecak apakah ada produk atau tidak
         if (idnull.id_user !== dataUserFromJWT.id) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
         }
         // Melakukan validasi apakah user yang mengupdate produk = user yang login
         if (id_user !== dataUserFromJWT.id ) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
         }
         // Cek apakah 
         // menangkap jika tidak ada gambar yang dimasukan
         if (files.length === 0) {
             // error headling jika gambar yang dimasukan tidak ada tau lebih dari 4
-            if (files.length > 4) return res.status(401).json(response.error(401, 'Gambar yang di masukan lebih dari 4'))
+            if (files.length > 4) {
+                // Function remove ada dipaling atas
+                removeFileUploadedByMulter(req.files);
+                return res.status(401).json(response.error(401, 'Gambar yang di masukan lebih dari 4'))
+            }
             
             // melakukan update pada tabel product sesuai id yang dimasukan
             const updateByProduct = await Product.update(options,
@@ -282,6 +337,8 @@ const updateDataProduct = async (req, res) => {
 
             // error headling jika data product gagal diperbarui
             if (updateByProduct === 0) {
+                // Function remove ada dipaling atas
+                removeFileUploadedByMulter(req.files);
                 return res.status(404).json(response.success(404,'Data Product Gagal Di Perbarui'))
             }
 
@@ -301,6 +358,8 @@ const updateDataProduct = async (req, res) => {
 
         // error headling jika data product gagal dibuat
         if (updateByProduct === 0) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             return res.status(404).json(response.success(404,'Data Product Gagal Di Perbarui'))
         }
 
@@ -314,7 +373,7 @@ const updateDataProduct = async (req, res) => {
         
         // untuk mendeklarasikan fungsi upload dan delete gambar yang berada di cloudinary dengan async await 
         const uploader = async (path,opts) => await cloudinary.uploadCloudinary(path,opts)
-        const deletee = async (path,opts) => await cloudinary.deleteCloudinary(path)
+        const deletee = async (path) => await cloudinary.deleteCloudinary(path)
         
         // menghapus image product yang berada di cloudinary
         for(const data of dataProductImage ){
@@ -364,6 +423,8 @@ const updateDataProduct = async (req, res) => {
          
          // Error headling jika data gagal dibuat
          if (DeleteProductImage === 0) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
             return res.status(404).json(response.error(404,'Data gambar Product gagal Di Perbarui'))
          }
 
@@ -372,6 +433,8 @@ const updateDataProduct = async (req, res) => {
  
           // Error headling jika data gagal dibuat
           if (updataImagesProduct === 0) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
              return res.status(404).json(response.error(404,'Data gambar Product gagal Di Perbarui'))
           }
 
@@ -379,6 +442,8 @@ const updateDataProduct = async (req, res) => {
         return res.status(200).json(response.success(200,'Data Product Berhasil Di Perbarui'))
 
     }catch(err){
+        // Function remove ada dipaling atas
+        removeFileUploadedByMulter(req.files);
         console.log(err)
 
         // response error jika proses gagal
@@ -399,6 +464,7 @@ const deleteDataProductById = async (req, res) => {
                 id: id_Product
             }
         }
+        console.log(id_Product);
     
         // mendapatkan hasil jika ada tau tidaknya data product dengan id yang dimasukan user
         const idnull = await Product.findOne(optionsNotId)
