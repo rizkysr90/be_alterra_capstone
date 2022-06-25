@@ -19,7 +19,7 @@ app.use(express.urlencoded({
 }))
 
 app.get('/',(req,res) => {
-    res.status(200).send('Hello FEJS1 X BEJS2 --staging')
+    res.status(200).send('Hello FEJS1 X BEJS2')
 })
 app.use(`${process.env.BASE_URL}`, router)
 app.all('*',(req,res) => {
