@@ -5,7 +5,6 @@ const routerUser = require('./user')
 const routerRegister = require('./register');
 const routerLogin = require('./login');
 const routerProfile = require('./profile');
-const routermyProduct = require('./myproduct')
 const routermyProduct = require('./myproducts')
 // const routerProduct = require('./product')
 // const routerCategories = require('./categories')
