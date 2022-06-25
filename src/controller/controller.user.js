@@ -90,6 +90,7 @@ const login = async (req,res) => {
 }
 const updateProfile = async (req,res) => {
     try {
+
         // console.log(req.params);
         const dataUserFromJWT = req.user
         const {user_id} = req.params;

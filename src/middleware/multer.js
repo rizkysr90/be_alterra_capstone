@@ -11,15 +11,27 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         const fileType = file.mimetype.split('/')[1];
         cb(null, + Date.now() + '-' + file.fieldname + `.${fileType}`);
-    }
+    },
 });
 
 const MulterError = (err, req, res, next) => {
     console.log(err);
+    const makeResponseObj = {
+        location : err.field
+    }
     // Mendapatkan Error multer dari filed MulterError
     if (err instanceof multer.MulterError) {
-        if (err.code.error === 'LIMIT_UNEXPECTED_FILE') {
-            return res.status(400).json(response.error(400,err.code.message));
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            makeResponseObj.message = 'file terlalu besar,maksimal 2mb';
+            return res.status(400).json(response.error(400,makeResponseObj));
+        }
+        if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+            makeResponseObj.message = 'Format Gambar Hanya bisa Jpg, Png, jpeg';
+            return res.status(400).json(response.error(400,makeResponseObj));
+        } else if (err.code.error = 'LIMIT_FILE_SIZE') {
+        }
+         else {
+            return res.status(400).json(response.error(400,err.code));
         }
     } else if (err) {
         return res.status(500).json(response.error(500,'Internal Server Error'))
@@ -28,31 +40,30 @@ const MulterError = (err, req, res, next) => {
 }
 const fileFilterImage = (req,file,cb) => {
     // Tipe file yang valid
-    const validType = ['image/jpg','image/png','image/jpeg'];
-    // Cek,apakah tipe file yang diupload sesuai
-    if (validType.includes(file.mimetype)) {
-        return cb(null, true);
-    }
-    // Membuat error message untuk handle Multer Error
-    const multerErrorOption = {
-        error : 'LIMIT_UNEXPECTED_FILE',
-        message : {
-            "location" : file.fieldname, 
-            "description" : 'File harus bertipe jpg,jpeg,atau png'
-        }
-    }
-    // Throw Error jika tipe file tidak sesuai
-    cb(new multer.MulterError(multerErrorOption),false);
+        const validType = ['image/jpg','image/png','image/jpeg'];
+        // Cek,apakah tipe file yang diupload sesuai
+        if (!validType.includes(file.mimetype)) {
+            // Return agar tidak melanjutkan fungsinya
+            cb(null,false);
+           return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE'))
+        } 
+        cb(null,true);
+
+    
 } 
-const MulterImgSingle = multer({
+const upload = multer({
     storage: storage,
-    fileFilter:fileFilterImage
+    fileFilter:fileFilterImage,
+    limits: {
+        fileSize: 2000000
+    }
+   
 })
 
   
 
 
 module.exports = {
-    MulterImgSingle,
+    upload,
     MulterError
 }

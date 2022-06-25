@@ -117,11 +117,11 @@ const createDataProduct = async (req, res) => {
             price: price,
             description: description,
             isActive: isActive,
-            status: status
-            // id_user: id_user,
+            status: status,
+            id_user: id_user,
             // id_category: id_category
         }
-    
+        // Melakukan validasi apakah user yang mengupload produk = user yang login
         // Membuat Product ke database
         const createProduct = await Product.create(dataMyProductInsertDatabase)
         
