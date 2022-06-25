@@ -9,7 +9,7 @@ const sanitationMyProducs = require('../middleware/validator/myProduct.sanitatio
 router.get('/', controllerProduct.dataProductAll)
 router.get('/:id', controllerProduct.dataProductById)
 router.post('/', upload.array('gambar'), sanitationMyProducs.sanitationDataMyProduct, myproductsValidator.create(), validate, controllerProduct.createDataProduct)
-router.put('/:id', upload.array('gambar'), controllerProduct.updateDataProduct)
+router.put('/:id', upload.array('gambar'), sanitationMyProducs.sanitationDataMyProduct, myproductsValidator.create(), validate, controllerProduct.updateDataProduct)
 router.delete('/:id', controllerProduct.deleteDataProductById)
 
 module.exports = router
