@@ -7,10 +7,12 @@ cloudinary.config({
     api_secret: `${process.env.CLOUDINARY_API_SECRET}` 
   });
 
- const uploadCloudinary = async (file) => {
+ const uploadCloudinary = async (file,opts) => {
     const uploadResult = await cloudinary.v2.uploader.upload(file, {
-        resource_type: "image",
-        folder: `Secondhand_app/Product/image/`
+        resource_type: opts.type,
+        folder: opts.folder,
+        eager_async: true,
+        eager : {quality: 50}
     })
 
     return uploadResult
@@ -20,7 +22,6 @@ cloudinary.config({
 const deleteCloudinary = async (file) => {
     const deleteResult = await cloudinary.v2.uploader.destroy(file, {
         resource_type: "image",
-        folder: `Secondhand_app/Product/image/`
     })
 
     return deleteResult
