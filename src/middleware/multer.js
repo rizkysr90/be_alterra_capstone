@@ -28,9 +28,7 @@ const MulterError = (err, req, res, next) => {
         if (err.code === 'LIMIT_UNEXPECTED_FILE') {
             makeResponseObj.message = 'Format Gambar Hanya bisa Jpg, Png, jpeg';
             return res.status(400).json(response.error(400,makeResponseObj));
-        } else if (err.code.error = 'LIMIT_FILE_SIZE') {
-        }
-         else {
+        } else {
             return res.status(400).json(response.error(400,err.code));
         }
     } else if (err) {

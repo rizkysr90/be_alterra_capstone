@@ -10,6 +10,12 @@ const validate = (req,res,next) => {
             // Delete file uploaded by multer(previous middleware) in ~/public/static/images
             if (req.file) {
                 fs.unlinkSync(req.file.path);
+            } else if (req.files) {
+                // jika multer menggunakan upload.array
+                // Delete file uploaded by multer(previous middleware) in ~/public/static/images
+                req.files.forEach((file) => {
+                    fs.unlinkSync(file.path);
+                })
             }
             // Semua data error disimpan di variabel errors.array()
             const dataErrorFromExpressValidator = errors.array();
