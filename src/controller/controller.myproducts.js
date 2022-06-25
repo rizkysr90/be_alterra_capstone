@@ -1,7 +1,8 @@
 const { Product } = require('../models')
-const { Product_image } = require('../models');
+const { Product_image,User } = require('../models');
 const response = require('../utility/responseModel');
-const cloudinary = require('../utility/cloudinaryMyproducts')
+const cloudinary = require('../utility/cloudinary');
+const pagination = require('./../utility/pagination');
 const fs = require('fs')
 
 
@@ -25,6 +26,10 @@ const dataProductAll = async (req, res) => {
                         {
                             model: Product_image,
                             attributes: ['id', 'name', 'url_image', 'product_id']
+                        },
+                        {
+                            model : User,
+                            attributes: {exclude: ['phone_number','email','password','updatedAt']},
                         }
                     ],
             // membuat pagination 
@@ -77,6 +82,10 @@ const dataProductById = async (req, res) => {
                         {
                             model: Product_image,
                             attributes: ['id', 'name', 'url_image', 'product_id']
+                        },
+                        {
+                            model : User,
+                            attributes: {exclude: ['phone_number','email','password','updatedAt']},
                         }
                     ]
         }
@@ -99,7 +108,9 @@ const dataProductById = async (req, res) => {
 
 const createDataProduct = async (req, res) => {
     try{
-
+        // mengambil data user dari jwt
+        const dataUserFromJWT = req.user
+        
         // deklarasi variabel yang telah dinputkan oleh user untuk database product
         const {name, price, description, isActive, status, id_user, id_category} = req.body
 
@@ -122,6 +133,9 @@ const createDataProduct = async (req, res) => {
             // id_category: id_category
         }
         // Melakukan validasi apakah user yang mengupload produk = user yang login
+        if (id_user !== dataUserFromJWT.id ) {
+            return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
+        }
         // Membuat Product ke database
         const createProduct = await Product.create(dataMyProductInsertDatabase)
         
@@ -131,10 +145,14 @@ const createDataProduct = async (req, res) => {
         }
         
         // untuk mendeklarasikan fungsi yang berada di cloudinary dengan async await 
-        const uploader = async (path) => await cloudinary.uploadCloudinary(path)
+        const uploader = async (path,opt) => await cloudinary.uploadCloudinary(path,opt)
         
         const dataMyProductImagesInsertDatabase = []
-
+        // Set configurasi agar function menjadi reusable
+        const optionsCloudinary = {
+            type: "image",
+            folder: "secondhand_app/image/products"
+        }
         for(const file of files){
             // Mengambil lokasi file lalu mendeklarasikan ke variabel
             const {path} = file;
@@ -143,11 +161,15 @@ const createDataProduct = async (req, res) => {
             // memisahkan nama dan format gambar
             const nameImg = originalname.split('.')[0];
             // memanggil fungsi uploader untuk mengupload gambar ke cloudinary
-            const newpath = await uploader(path)
+            const newpath = await uploader(path,optionsCloudinary)
 
              // Mengambil url_gambar public_id product lalu mendeklarasikan ke variabel
-            const {secure_url, public_id} = newpath
+            // const {secure_url, public_id} = newpath
 
+             // Mendestructuring publicId sebagai profile_picture_id,dan url hasil optimisasi gambar
+             const {public_id,eager} = newpath;
+             // eager is the result of optimization image
+             const secure_url = eager[0].secure_url;
             // menghapus file gambar setelah data gambar yang diperlukan telah disimpan di server agar tidak menyimpan banyak penyimpanan
             fs.unlinkSync(path)
 
@@ -198,6 +220,9 @@ const createDataProduct = async (req, res) => {
 
 const updateDataProduct = async (req, res) => {
     try{
+        // Mengambil data dari jwt
+        const dataUserFromJWT = req.user
+
         // membuat variabel dengan value params id yang di input user
         const id_product = req.params.id
 
@@ -229,10 +254,19 @@ const updateDataProduct = async (req, res) => {
                 description: description,
                 isActive: isActive,
                 status: status,
-                // id_user: id_user,
+                id_user: id_user,
                 // id_category: id_category
         }
-
+        // Melakukan validasi apakah user yang mengupdate produk merupakan pemilik produk tersebut
+        // idnull merupakan data produk yang dipakai saat mengecak apakah ada produk atau tidak
+        if (idnull.id_user !== dataUserFromJWT.id) {
+            return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
+        }
+        // Melakukan validasi apakah user yang mengupdate produk = user yang login
+        if (id_user !== dataUserFromJWT.id ) {
+            return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
+        }
+        // Cek apakah 
         // menangkap jika tidak ada gambar yang dimasukan
         if (files.length === 0) {
             // error headling jika gambar yang dimasukan tidak ada tau lebih dari 4
@@ -279,8 +313,8 @@ const updateDataProduct = async (req, res) => {
 
         
         // untuk mendeklarasikan fungsi upload dan delete gambar yang berada di cloudinary dengan async await 
-        const uploader = async (path) => await cloudinary.uploadCloudinary(path)
-        const deletee = async (path) => await cloudinary.deleteCloudinary(path)
+        const uploader = async (path,opts) => await cloudinary.uploadCloudinary(path,opts)
+        const deletee = async (path,opts) => await cloudinary.deleteCloudinary(path)
         
         // menghapus image product yang berada di cloudinary
         for(const data of dataProductImage ){
@@ -289,7 +323,11 @@ const updateDataProduct = async (req, res) => {
 
         // membuat variabel untuk menampung data product image yang ingin di update 
         const dataMyProductImagesUpdateDatabase = []
-
+        // Set configurasi agar function menjadi reusable
+        const optionsCloudinary = {
+            type: "image",
+            folder: "secondhand_app/image/products"
+        }
          for(const file of files){    
              // Mengambil lokasi file lalu mendeklarasikan ke variabel
              const {path} = file;
@@ -298,10 +336,13 @@ const updateDataProduct = async (req, res) => {
              // memisahkan nama dan format gambar
              const nameImg = originalname.split('.')[0];
              // memanggil fungsi uploader
-             const newpath = await uploader(path)
+             const newpath = await uploader(path,optionsCloudinary)
               // Mengambil url_gambar product lalu mendeklarasikan ke variabel
-             const {secure_url, public_id} = newpath
-
+            //  const {secure_url, public_id} = newpath
+            // Mendestructuring publicId sebagai profile_picture_id,dan url hasil optimisasi gambar
+            const {public_id,eager} = newpath;
+            // eager is the result of optimization image
+            const secure_url = eager[0].secure_url;
              // menghapus file gambar setelah data gambar yang diperlukan telah disimpan di server agar tidak menyimpan banyak penyimpanan
             fs.unlinkSync(path)
  
@@ -348,6 +389,7 @@ const updateDataProduct = async (req, res) => {
 
 const deleteDataProductById = async (req, res) => {
     try{
+        const dataUserFromJWT = req.user;
         // Mengambil Id params yang dimasukan user
         const id_Product = req.params.id
 
@@ -365,7 +407,11 @@ const deleteDataProductById = async (req, res) => {
         if (idnull === null){
             return res.status(401).json(response.error(401,`id_product ${id_Product} Tidak Ditemukan`));
         }
-
+         // Melakukan validasi apakah user yang menghapus produk merupakan pemilik produk tersebut
+        // idnull merupakan data produk yang dipakai saat mengecak apakah ada produk atau tidak
+        if (idnull.id_user !== dataUserFromJWT.id) {
+            return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
+        }
         // untuk mendeklarasikan fungsi yang berada di cloudinary dengan async await 
         const deletee = async (path) => await cloudinary.deleteCloudinary(path)
 

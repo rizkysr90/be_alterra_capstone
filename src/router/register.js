@@ -3,7 +3,7 @@ const router = express.Router();
 const controllerUser = require('../controller/controller.user');
 const validate = require('./../middleware/expressValidator');
 const userValidator = require('./../middleware/validator/user.validator');
-
-router.post('/',userValidator.create(),validate,controllerUser.createUser);
+const userSanitize = require('./../middleware/sanitize/user.sanitize');
+router.post('/',userSanitize.create(),userValidator.create(),validate,controllerUser.createUser);
 
 module.exports = router;

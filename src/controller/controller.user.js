@@ -3,7 +3,9 @@ const fs = require('fs');
 const response = require('./../utility/responseModel');
 const bcrypt = require('../utility/bcrypt');
 const issueJWT = require('../utility/issueJwt');
-const cloudinary = require('../middleware/cloudinary');
+const cloudinary = require('../utility/cloudinary')
+const uploader = async (path,opts) => await cloudinary.uploadCloudinary(path,opts);
+const deleteAtCld = async (path,opts) => await cloudinary.deleteCloudinary(path);
 
 const dataUserAll = (req,res) => {
     res.status(200).json({
@@ -14,6 +16,7 @@ const dataUserAll = (req,res) => {
 const createUser = async (req,res,next) => {
     // Pakai try catch untuk handle error by server agar bisa ditangkap
     try {
+
         // Di req.body akan ada data = {email,password,name} untuk register
         const {email,password,name} = req.body
         // Email harus unique,jadi sebelum create melakukan validasi
@@ -90,7 +93,7 @@ const login = async (req,res) => {
 }
 const updateProfile = async (req,res) => {
     try {
-
+        // untuk mendeklarasikan fungsi yang berada di cloudinary dengan async await 
         // console.log(req.params);
         const dataUserFromJWT = req.user
         const {user_id} = req.params;
@@ -115,13 +118,19 @@ const updateProfile = async (req,res) => {
         } else {
             // upload image yang sudah dioptimasi ke cld
             // referensi docs -> https://cloudinary.com/documentation/image_upload_api_reference#upload_examples
-            const uploadImageResponse = await cloudinary.uploader.upload(req.file.path, {
-                resource_type: "image",
-                folder: "secondhand_app/image/profile_picture",
-                eager_async: true,
-                eager : {quality: 50}
+            const optionsCloudinary = {
+                type: "image",
+                folder: "secondhand_app/image/profile_picture"
+            }
+            const uploadImageResponse = await uploader(req.file.path,optionsCloudinary);
+            
+            // const uploadImageResponse = await cloudinary.uploader.upload(req.file.path, {
+            //     resource_type: "image",
+            //     folder: "secondhand_app/image/profile_picture",
+            //     eager_async: true,
+            //     eager : {quality: 50}
     
-            });
+            // });
             // Mendestructuring publicId sebagai profile_picture_id,dan url hasil optimisasi gambar
             const {public_id,eager} = uploadImageResponse;
             // eager is the result of optimization image
@@ -142,9 +151,10 @@ const updateProfile = async (req,res) => {
             // console.log(dataUserFromJWT)
             // Melakukan penghapusan resource di cld
             if (dataUserFromJWT.profile_picture_id) {
-                await cloudinary.uploader.destroy(dataUserFromJWT.profile_picture_id, {
-                    resource_type : "image"
-                });
+                // await cloudinary.uploader.destroy(dataUserFromJWT.profile_picture_id, {
+                //     resource_type : "image"
+                // });
+                await deleteAtCld(dataUserFromJWT.profile_picture_id);
             }
             // Delete file uploaded by multer in ~/public/static/images
             fs.unlinkSync(req.file.path);
