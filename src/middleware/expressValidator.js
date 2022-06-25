@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const response = require('./../utility/responseModel');
 const fs = require('fs')
 
+
 const validate = (req,res,next) => {
     try {
         // Mengambil semua error yang terjadi saat melakukan validasi di middleware sebelumnya
