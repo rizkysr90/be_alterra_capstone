@@ -7,9 +7,11 @@ const fs = require('fs')
 
 const dataProductAll = async (req, res) => {
     try{
-        // Membuat Variabel row dan page yang telah di inputkan user
-        let { page, row } = req.query.page
-    
+        // Membuat Variabel page yang telah di inputkan user
+        // 12 adalah row nya
+        const {page,row} = pagination(req.query.page,12)
+        // Mengikuti design yang ada di figma
+        
         // opsi yang digunakakan untuk menampilkan user 
         const options = {
             // membuat id yang ditampilkan berurutan
