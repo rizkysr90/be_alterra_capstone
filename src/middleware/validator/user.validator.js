@@ -26,7 +26,6 @@ const update = () => {
         body('address','alamat wajib diisi').notEmpty(),
         body('phone_number','nomor hp tidak valid').isMobilePhone(['id-ID']),
         body('city_id','city_id harus integer').isInt(),
-
     ]
 }
 

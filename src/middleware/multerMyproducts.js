@@ -2,6 +2,7 @@ const multer = require('multer');
 const response = require('./../utility/responseModel');
 const fs = require('fs');
 
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const fileLocation = './public/static/images';
@@ -56,3 +57,20 @@ module.exports = {
     MulterImgSingle,
     MulterError
 }
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+         if (file.mimetype === 'image/jpg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
+            return cb(null, true);
+        }else{
+            cb(null, false);
+            cb(new Error('Format Gambar Hanya bisa Jpg, Png, jpeg'));
+        }
+    },
+    limits: {
+        fileSize: 2000000
+    }
+});
+
+module.exports = upload;
+

@@ -13,6 +13,7 @@ module.exports = {
     "host": process.env.TEST_DB_HOST,
     "dialect": "postgres"
   },
+<<<<<<< HEAD
   "staging": {
     "username": process.env.STAGING_DB_USERNAME,
     "password": process.env.STAGING_DB_PASSWORD,
@@ -26,6 +27,8 @@ module.exports = {
       }
     }
   },
+=======
+>>>>>>> Membuat CRUD pada api products
   "production": {
     "username": process.env.PROD_DB_USERNAME,
     "password": process.env.PROD_DB_PASSWORD,

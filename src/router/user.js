@@ -5,5 +5,6 @@ const validate = require('./../middleware/expressValidator');
 const userValidator = require('./../middleware/validator/user.validator');
 
 router.get('/', controllerUser.dataUserAll);
+router.post('/register',userValidator.create(),validate,controllerUser.createUser);
 
 module.exports = router

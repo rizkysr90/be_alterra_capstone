@@ -4,12 +4,14 @@ const response = require('./../utility/responseModel');
 const bcrypt = require('../utility/bcrypt');
 const issueJWT = require('../utility/issueJwt');
 const cloudinary = require('../middleware/cloudinary');
+
 const dataUserAll = (req,res) => {
     res.status(200).json({
         messege : 'Succcess'
     })
 }
-const createUser = async (req,res) => {
+
+const createUser = async (req,res,next) => {
     // Pakai try catch untuk handle error by server agar bisa ditangkap
     try {
         // Di req.body akan ada data = {email,password,name} untuk register
@@ -57,6 +59,7 @@ const createUser = async (req,res) => {
         // Saat mau mengembalikan response dari request wajib melakukan return agar server tidak error
         return res.status(500).json(response.error(500,'Internal Server Error'));
     }
+
 }
 const login = async (req,res) => {
     try {
@@ -180,6 +183,7 @@ const getProfileById = async (req,res) => {
     }
    
 
+
 }
 
 
@@ -189,4 +193,5 @@ module.exports = {
     login,
     updateProfile,
     getProfileById
+
 }
