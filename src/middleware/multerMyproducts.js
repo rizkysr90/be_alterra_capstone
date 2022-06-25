@@ -64,7 +64,7 @@ const upload = multer({
             return cb(null, true);
         }else{
             cb(null, false);
-            cb(new Error('Wrong filetype'));
+            cb(new Error('Format Gambar Hanya bisa Jpg, Png, jpeg'));
         }
     },
     limits: {

@@ -1,7 +1,7 @@
-const { Product } = require('../models/')
-const { Product_image } = require('../models/');
-const response = require('./../utility/responseModel');
-const cloudinary = require('../utility/cloudinary')
+const { Product } = require('../models')
+const { Product_image } = require('../models');
+const response = require('../utility/responseModel');
+const cloudinary = require('../utility/cloudinaryMyproducts')
 const fs = require('fs')
 
 
@@ -97,6 +97,7 @@ const dataProductById = async (req, res) => {
 
 const createDataProduct = async (req, res) => {
     try{
+
         // deklarasi variabel yang telah dinputkan oleh user untuk database product
         const {name, price, description, isActive, status, id_user, id_category} = req.body
 
