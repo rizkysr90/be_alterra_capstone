@@ -8,7 +8,8 @@ const create = () => {
         body('email','email tidak valid').isEmail(),
         body('password','minimal panjang password adalah 8 karakter').isLength({
             min : 8
-        })
+        }),
+        body('password','password tidak boleh mengandung spasi').not().contains(" ")
     ]
 }
 const login = () => {

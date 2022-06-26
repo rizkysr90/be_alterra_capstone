@@ -5,10 +5,10 @@ const authJWT = require('./../middleware/passport-jwt');
 const validate = require('./../middleware/expressValidator');
 const userValidator = require('./../middleware/validator/user.validator');
 const userSanitize = require('./../middleware/sanitize/user.sanitize');
-const {MulterImgSingle,MulterError} = require('./../middleware/multer');
+const {upload,MulterError} = require('./../middleware/multer');
 
 router.get('/:user_id',authJWT,userController.getProfileById);
-router.put('/:user_id',authJWT,MulterImgSingle.single('profile_picture'),
+router.put('/:user_id',authJWT,upload.single('profile_picture'),
             MulterError,userSanitize.update(),userValidator.update(),
             validate,userController.updateProfile);
 
