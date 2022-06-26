@@ -13,6 +13,10 @@ const getProductAll = async (req, res) => {
         
         // opsi yang digunakakan untuk menampilkan user 
         const options = {
+            where: {
+                isActive: true,
+                status: true
+            },
             // membuat id yang ditampilkan berurutan
             order: [
                 ['id', 'ASC'],
@@ -42,7 +46,7 @@ const getProductAll = async (req, res) => {
         // memangil semua data di tabel product dan foreign keynya 
         const getDataProductAll = await Product.findAll(options)
 
-        if (!getDataProductAll) {
+        if(getDataProductAll.length === 0 || !getDataProductAll){
             return res.status(404).json(response.error(404, 'Product not found'))
         }
     

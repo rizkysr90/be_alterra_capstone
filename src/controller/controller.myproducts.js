@@ -12,7 +12,62 @@ const removeFileUploadedByMulter = (files) => {
     }
     
 }
+const dataProductAllTerjual = async (req, res) => {
+    try{
+        // Membuat Variabel page yang telah di inputkan user
+        // 12 adalah row nya
+        const {page,row} = pagination(req.query.page,12)
+        // Mengikuti design yang ada di figma
+        
+        // opsi yang digunakakan untuk menampilkan user 
+        const options = {
+            where: {
+                isActive: true,
+                status: false
+            },
+            // membuat id yang ditampilkan berurutan
+            order: [
+                ['id', 'ASC'],
+            ],
+            // membuat agar yang di tampilkan hanya di dalam attribute
+            attributes: ['id', 'name', 'price', 'description', 'isActive', 'status', 'id_user', 'id_category'],
+                    // menampilkan foreig key product image yang ber primary key di product
+                    include: [
+                        {
+                            model: Product_image,
+                            attributes: ['id', 'name', 'url_image', 'product_id']
+                        },
+                        {
+                            model : User,
+                            attributes: {exclude: ['phone_number','email','password','updatedAt']},
+                        },
+                        {
+                            model : Category
+                        }
+                    ],
+            // membuat pagination 
+            limit: row,
+            offset: page
+            
+        }
+    
+        // memangil semua data di tabel product dan foreign keynya 
+        const getDataProductAll = await Product.findAll(options)
 
+        if(getDataProductAll.length === 0 || !getDataProductAll){
+            return res.status(404).json(response.error(404, 'Product not found'))
+        }
+    
+        // menampilkan response semua data jika berhasil
+        res.status(200).json(response.success(200, getDataProductAll))
+    }catch(err){
+        // menampilkan error di console log
+        console.log(err)
+
+        // menampilkan response semua data jika gagal
+        return res.status(500).json(response.error(500, 'Internal Server Error'))
+    }
+}
 
 const dataProductAll = async (req, res) => {
     try{
@@ -546,6 +601,7 @@ const deleteDataProductById = async (req, res) => {
 
 module.exports = {
     dataProductAll,
+    dataProductAllTerjual,
     dataProductById,
     createDataProduct,
     updateDataProduct,
