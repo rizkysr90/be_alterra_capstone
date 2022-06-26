@@ -1,7 +1,7 @@
 const { Category } = require('../models');
 const response = require('../utility/responseModel');
 const cloudinary = require('../utility/cloudinary');
-const upload = require('../middleware/multerCategories');
+const upload = require('../middleware/multer');
 const pagination = require('./../utility/pagination');
 
 const getAllCategory = async (req, res) => {
