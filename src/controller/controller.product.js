@@ -75,7 +75,8 @@ const getProducByCategory = async(req, res) => {
         // opsi mengecek data category sesuai id
         const optionsCategory = {
             where: {
-                id: id_category
+                id: id_category,
+                
             }
         }
 
@@ -90,29 +91,32 @@ const getProducByCategory = async(req, res) => {
         const opsiGetData = {
             where: {
                 id: id_category,
+                isActive: true,
+                status: true
             },
             // membuat agar yang di tampilkan hanya di dalam attribute
             attributes: {
                 exclude: ['createdAt','updatedAt']
             },
-                include: [
-                    {
-                        model: Product,
-                        attributes: ['id', 'name', 'price', 'description', 'isActive', 'status', 'id_user', 'id_category'],
-                            include: [
-                                {
-                                    model: Product_image,
-                                    attributes: ['id', 'name', 'url_image', 'product_id']
-                                }
-                            ],
-                        // membuat pagination 
-                        limit: row,
-                        offset: page
-                    }
-                ]
+            include: [
+                {
+                    model: Product_image,
+                    attributes: ['id', 'name', 'url_image', 'product_id']
+                },
+                {
+                    model : User,
+                    attributes: {exclude: ['phone_number','email','password','updatedAt']},
+                },
+                {
+                    model : Category
+                }
+            ],
+             // membuat pagination 
+             limit: row,
+             offset: page
         }
-
-        const getDataCategoryById = await Category.findOne(opsiGetData)
+        
+        const getDataCategoryById = await Product.findAll(opsiGetData)
 
         if (!getDataCategoryById) {
             res.status(404).json(response.error(404, 'Product not found'))
@@ -207,7 +211,9 @@ const getProducBySerach = async (req, res) => {
             where: {
                 "name": {
                     [Op.iLike]: `%${name}`,
-                }
+                },
+                isActive: true,
+                status: true
             },
             // membuat agar yang di tampilkan hanya di dalam attribute
             attributes: ['id', 'name', 'price', 'description', 'isActive', 'status', 'id_user', 'id_category'],
@@ -231,7 +237,7 @@ const getProducBySerach = async (req, res) => {
         }
 
         // memangil satu data by id di tabel product dan foreign keynya
-        const getDataProducTByname = await Product.findOne(options)
+        const getDataProducTByname = await Product.findAll(options)
 
         if (getDataProducTByname === null) {
             return res.status(401).json(response.error(401,`name ${name} Tidak Ditemukan`));
