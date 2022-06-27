@@ -1,13 +1,15 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const response = require('../utility/responseModel');
-const routerUser = require('./user')
+const routerUser = require('./user');
 const routerRegister = require('./register');
 const routerLogin = require('./login');
 const routerProfile = require('./profile');
 const routermyProduct = require('./myproducts')
 const routerCity = require('./city');
 const routerProduct = require('./product')
+const routerCategories = require('./categories');
+const routermyProduct = require('./myproducts');
 
 router.use(`${process.env.URL_ROUTER_REGISTER}`,routerRegister)
 router.use(`${process.env.URL_ROUTER_USER}`, routerUser)
@@ -17,13 +19,11 @@ router.use(`${process.env.URL_ROUTER_USER}`, routerUser)
 router.use(`${process.env.URL_ROUTER_MYPRODUCT}`, routermyProduct)
 router.use(`${process.env.URL_ROUTER_CITY}`,routerCity)
 router.use(`${process.env.URL_ROUTER_PRODUCT}`, routerProduct)
+router.use(`${process.env.URL_ROUTER_CATEGORIES}`, routerCategories);
 
 
-router.use('/',(req,res) => {
-    res.status(200).json(response.success(200,'Hello World'))
-})
+router.use('/', (req, res) => {
+  res.status(200).json(response.success(200, 'Hello World'));
+});
 
-
-
-
-module.exports = router
+module.exports = router;
