@@ -10,7 +10,7 @@ const getAllCategory = async (req, res) => {
   try {
     const { page, row } = pagination(req.query.page, 12);
     const options = {
-      order: [['id', 'ASC']],
+      order: [['name', 'ASC']],
       attributes: ['id', 'name', 'image', 'isActive'],
       limit: row,
       offset: page,
@@ -23,7 +23,7 @@ const getAllCategory = async (req, res) => {
         .status(404)
         .json(response.error(404, 'Category not found'));
     }
-    res.status(200).json(response.success(200, getAllCategory));
+    return res.status(200).json(response.success(200, getAllCategory));
   } catch (err) {
     console.log(err);
     return res
@@ -65,10 +65,10 @@ const getCategoryById = async (req, res) => {
     const getCategoryById = await Category.findOne(options);
 
     if (!getCategoryById) {
-      res.status(404).json(response.error(404, 'Category not found'));
+      return res.status(404).json(response.error(404, 'Category not found'));
     }
 
-    res.status(200).json(response.success(200, getCategoryById));
+    return res.status(200).json(response.success(200, getCategoryById));
   } catch (err) {
     console.log(err);
 
@@ -80,29 +80,7 @@ const getCategoryById = async (req, res) => {
 
 const createCategory = async (req, res) => {
   try {
-    const dataUserFromJWT = req.user.dataValues;
-    for (let props in dataUserFromJWT) {
-      if (dataUserFromJWT[props] === null) {
-        const requiredData = [
-          'phone_number',
-          'address',
-          'name',
-          'city_id',
-        ];
-        if (requiredData.includes(props)) {
-          // Menghapus data gambar yg diupload oleh multer jika terjadi error
-          fs.unlinkSync(req.file.path);
-          return res
-            .status(401)
-            .json(
-              response.error(
-                401,
-                'Anda tidak memiliki akses,lengkapi profile terlebih dahulu'
-              )
-            );
-        }
-      }
-    }
+
     // Data yang dibutuhkan untuk membuat category untuk sekarang hanya :
     // isActive,name,image
     const { name, isActive } = req.body;
@@ -131,24 +109,12 @@ const createCategory = async (req, res) => {
     const createCategory = await Category.create(
       dataMyCategoryInsertDatabase
     );
-    if (!createCategory) {
-      // Menghapus data gambar yg diupload oleh multer jika terjadi error
-      fs.unlinkSync(req.file.path);
-      return res
-        .status(404)
-        .json(response.error(404, 'Data Category Gagal dibuat'));
-    }
+   
 
-    const dataCategorySuccesCreate = await Category.findOne({
-      where: {
-        id: createCategory.id,
-      },
-      attributes: ['id', 'name', 'image', 'isActive'],
-    });
-
-    res
+    
+    return res
       .status(201)
-      .json(response.success(201, dataCategorySuccesCreate));
+      .json(response.success(201, 'Succes add data'));
   } catch (err) {
     // Menghapus data gambar yg diupload oleh multer jika terjadi error
     fs.unlinkSync(req.file.path);
@@ -161,30 +127,6 @@ const createCategory = async (req, res) => {
 
 const updateCategory = async (req, res) => {
   try {
-    const dataUserFromJWT = req.user.dataValues;
-    for (let props in dataUserFromJWT) {
-      if (dataUserFromJWT[props] === null) {
-        const requiredData = [
-          'phone_number',
-          'address',
-          'name',
-          // 'city_id',
-        ];
-        if (requiredData.includes(props)) {
-           // Menghapus data gambar yg diupload oleh multer jika terjadi error
-          fs.unlinkSync(req.file.path);
-          return res
-            .status(401)
-            .json(
-              response.error(
-                401,
-                'Anda tidak memiliki akses, lengkapi profile terlebih dahulu'
-              )
-            );
-        }
-      }
-    }
-
     const id_category = req.params.id;
     // Cek apakah kategori dengan id_category ada didatabase
     const findCategory = await Category.findOne({
@@ -203,12 +145,12 @@ const updateCategory = async (req, res) => {
     };
 
     if (req.file === undefined) {
-      const updateByCategory = await Category.update(dataCategory, {
+      await Category.update(dataCategory, {
         where: {
           id: id_category,
         },
       });
-      res.status(201).json(response.success(201, "Sukses update data"));
+      res.status(200).json(response.success(200, "Sukses update data"));
     } else {
       const optionsCloudinary = {
         type: "image",
@@ -248,7 +190,6 @@ const updateCategory = async (req, res) => {
 
 const deleteCategoryById = async (req, res) => {
   try {
-    const dataUserFromJWT = req.user;
     const id_category = req.params.id;
 
     const optionsNotId = {
@@ -256,20 +197,19 @@ const deleteCategoryById = async (req, res) => {
         id: id_category,
       },
     };
-    console.log(id_category);
     const idnull = await Category.findOne(optionsNotId);
 
     if (idnull === null) {
       return res
-        .status(401)
+        .status(404)
         .json(
           response.error(
-            401,
+            404,
             `id_category ${id_category} Tidak Ditemukan`
           )
         );
     }
-
+   
 
     const options = {
       where: {
@@ -289,7 +229,12 @@ const deleteCategoryById = async (req, res) => {
           )
         );
     }
-    res
+    if (idnull.image_public_id !== null) {
+      // Delete previous image in cloudinary
+        await deleteAtCld(idnull.image_public_id);
+    }
+
+    return res
       .status(200)
       .json(
         response.success(
