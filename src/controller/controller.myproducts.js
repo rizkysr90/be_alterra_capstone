@@ -22,6 +22,7 @@ const dataProductAllTerjual = async (req, res) => {
         // opsi yang digunakakan untuk menampilkan user 
         const options = {
             where: {
+                id_user : dataUser.id,
                 isActive: true,
                 status: false
             },
