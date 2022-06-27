@@ -71,6 +71,8 @@ const dataProductAllTerjual = async (req, res) => {
 
 const dataProductAll = async (req, res) => {
     try{
+        // Data user from JWT
+        const dataUser = req.user;
         // Membuat Variabel page yang telah di inputkan user
         // 12 adalah row nya
         const {page,row} = pagination(req.query.page,12)
@@ -78,6 +80,10 @@ const dataProductAll = async (req, res) => {
         
         // opsi yang digunakakan untuk menampilkan product
         const options = {
+            where : {
+                // Mengambil data yang memang hanya diupload oleh user yang login
+                id_user : dataUser.id
+            },
             // membuat id yang ditampilkan berurutan
             order: [
                 ['id', 'ASC'],
@@ -125,13 +131,16 @@ const dataProductAll = async (req, res) => {
 
 const dataProductById = async (req, res) => {
     try{
+        // Data user dari JWT
+        const dataUser = req.user;
         // mengambil id yang dimasukan user lalu ditaru ke variabels
         const id_product = req.params.id
 
         // opsi mengecek jika id yang dimasukan cocok dengan id di database produk
         const optionsNotId = {
             where: {
-                id: id_product
+                id: id_product,
+                id_user : dataUser.id
             }
         }
     
@@ -146,6 +155,8 @@ const dataProductById = async (req, res) => {
         const options = {
             where: {
                 id: id_product,
+                id_user : dataUser.id
+
             },
             // membuat agar yang di tampilkan hanya di dalam attribute
             attributes: ['id', 'name', 'price', 'description', 'isActive', 'status', 'id_user', 'id_category'],
@@ -529,7 +540,6 @@ const deleteDataProductById = async (req, res) => {
                 id: id_Product
             }
         }
-        console.log(id_Product);
     
         // mendapatkan hasil jika ada tau tidaknya data product dengan id yang dimasukan user
         const idnull = await Product.findOne(optionsNotId)
