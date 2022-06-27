@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const response = require('../utility/responseModel');
 const routerUser = require('./user');
 const routerRegister = require('./register');
 const routerLogin = require('./login');
@@ -9,7 +8,6 @@ const routermyProduct = require('./myproducts')
 const routerCity = require('./city');
 const routerProduct = require('./product')
 const routerCategories = require('./categories');
-const routermyProduct = require('./myproducts');
 
 router.use(`${process.env.URL_ROUTER_REGISTER}`,routerRegister)
 router.use(`${process.env.URL_ROUTER_USER}`, routerUser)
