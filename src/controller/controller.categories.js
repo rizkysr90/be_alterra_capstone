@@ -1,8 +1,10 @@
 const { Category } = require('../models');
 const response = require('../utility/responseModel');
+const fs = require('fs');
 const cloudinary = require('../utility/cloudinary');
-const upload = require('../middleware/multer');
 const pagination = require('./../utility/pagination');
+const uploader = async (path,opts) => await cloudinary.uploadCloudinary(path,opts);
+const deleteAtCld = async (path,opts) => await cloudinary.deleteCloudinary(path);
 
 const getAllCategory = async (req, res) => {
   try {
@@ -72,7 +74,7 @@ const getCategoryById = async (req, res) => {
 
     return res
       .status(500)
-      .json(response.error(500), 'Internal Server Error');
+      .json(response.error(500, 'Internal Server Error'));
   }
 };
 
@@ -88,6 +90,8 @@ const createCategory = async (req, res) => {
           'city_id',
         ];
         if (requiredData.includes(props)) {
+          // Menghapus data gambar yg diupload oleh multer jika terjadi error
+          fs.unlinkSync(req.file.path);
           return res
             .status(401)
             .json(
@@ -99,26 +103,37 @@ const createCategory = async (req, res) => {
         }
       }
     }
-    const { name, isActive, id_user, image } = req.body;
+    // Data yang dibutuhkan untuk membuat category untuk sekarang hanya :
+    // isActive,name,image
+    const { name, isActive } = req.body;
 
     const dataMyCategoryInsertDatabase = {
       name: name,
-      image: image,
       isActive: isActive,
-      id_user: id_user,
     };
-
-    if (id_user !== dataUserFromJWT.id) {
-      return res
-        .status(401)
-        .json(response.error(401, 'Anda tidak memiliki akses'));
+    
+    // upload image yang sudah dioptimasi ke cld
+    // referensi docs -> https://cloudinary.com/documentation/image_upload_api_reference#upload_examples
+    const optionsCloudinary = {
+      type: "image",
+      folder: "secondhand_app/image/categories"
     }
-
+    const uploadImageResponse = await uploader(req.file.path,optionsCloudinary);
+    
+    // Mendestructuring publicId sebagai profile_picture_id,dan url hasil optimisasi gambar
+    const {public_id,eager} = uploadImageResponse;
+    // eager is the result of optimization image
+    const secure_url = eager[0].secure_url;
+    dataMyCategoryInsertDatabase.image = secure_url;
+    dataMyCategoryInsertDatabase.image_public_id = public_id;
+    // Menghapus data gambar yg diupload oleh multer jika terjadi error
+    fs.unlinkSync(req.file.path);
     const createCategory = await Category.create(
       dataMyCategoryInsertDatabase
     );
-
     if (!createCategory) {
+      // Menghapus data gambar yg diupload oleh multer jika terjadi error
+      fs.unlinkSync(req.file.path);
       return res
         .status(404)
         .json(response.error(404, 'Data Category Gagal dibuat'));
@@ -135,6 +150,8 @@ const createCategory = async (req, res) => {
       .status(201)
       .json(response.success(201, dataCategorySuccesCreate));
   } catch (err) {
+    // Menghapus data gambar yg diupload oleh multer jika terjadi error
+    fs.unlinkSync(req.file.path);
     console.log(err);
     return res
       .status(500)
@@ -154,6 +171,8 @@ const updateCategory = async (req, res) => {
           // 'city_id',
         ];
         if (requiredData.includes(props)) {
+           // Menghapus data gambar yg diupload oleh multer jika terjadi error
+          fs.unlinkSync(req.file.path);
           return res
             .status(401)
             .json(
@@ -167,29 +186,59 @@ const updateCategory = async (req, res) => {
     }
 
     const id_category = req.params.id;
-    const { name, isActive, id_user, image } = req.body;
+    // Cek apakah kategori dengan id_category ada didatabase
+    const findCategory = await Category.findOne({
+      where : {
+        id : id_category
+      }
+    })
+    if (!findCategory) {
+      return res.status(404).json(response.error(404,'Category not found'))
+    }
+    const { name, isActive} = req.body;
 
     const dataCategory = {
       name: name,
-      image: image,
       isActive: isActive,
-      id_user: id_user,
     };
 
-    if (id_user !== dataUserFromJWT.id) {
-      return res
-        .status(401)
-        .json(response.error(401, 'Anda tidak memiliki akses'));
+    if (req.file === undefined) {
+      const updateByCategory = await Category.update(dataCategory, {
+        where: {
+          id: id_category,
+        },
+      });
+      res.status(201).json(response.success(201, "Sukses update data"));
+    } else {
+      const optionsCloudinary = {
+        type: "image",
+        folder: "secondhand_app/image/categories"
+      }
+      const uploadImageResponse = await uploader(req.file.path,optionsCloudinary);
+      // Mendestructuring publicId sebagai profile_picture_id,dan url hasil optimisasi gambar
+      const {public_id,eager} = uploadImageResponse;
+      // eager is the result of optimization image
+      const secure_url = eager[0].secure_url;
+      dataCategory.image = secure_url;
+      dataCategory.image_public_id = public_id;
+      // Menghapus data gambar yg diupload oleh multer jika terjadi error
+      fs.unlinkSync(req.file.path);
+      await Category.update(dataCategory, {
+        where: {
+          id: id_category,
+        },
+      });
+      if (findCategory.image_public_id !== null) {
+        // Delete previous image in cloudinary
+          await deleteAtCld(findCategory.image_public_id);
+      }
+      res.status(201).json(response.success(201, "Sukses update data"));
     }
+    
 
-    const updateByCategory = await Category.update(dataCategory, {
-      where: {
-        id: id_category,
-      },
-    });
-
-    res.status(201).json(response.success(201, dataCategory));
   } catch (err) {
+     // Menghapus data gambar yg diupload oleh multer jika terjadi error
+     fs.unlinkSync(req.file.path);
     console.log(err);
     return res
       .status(500)
@@ -221,11 +270,6 @@ const deleteCategoryById = async (req, res) => {
         );
     }
 
-    if (idnull.id_user !== dataUserFromJWT.id) {
-      return res
-        .status(401)
-        .json(response.error(401, 'Anda tidak memiliki akses'));
-    }
 
     const options = {
       where: {

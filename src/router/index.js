@@ -22,8 +22,8 @@ router.use(`${process.env.URL_ROUTER_PRODUCT}`, routerProduct)
 router.use(`${process.env.URL_ROUTER_CATEGORIES}`, routerCategories);
 
 
-router.use('/', (req, res) => {
-  res.status(200).json(response.success(200, 'Hello World'));
+router.all('*',(req,res) => {
+    res.status(404).json({message :"Sorry, page not found"});
 });
 
 module.exports = router;

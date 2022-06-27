@@ -14,7 +14,7 @@ const update = () => {
     body('name', 'Nama Wajib Diisi').notEmpty(),
     body('isActive', 'IsActive Diterbitkan Wajib Diisi')
       .notEmpty()
-      .toInt(),
+      .toBoolean(),
   ];
 };
 

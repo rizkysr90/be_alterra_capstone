@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   Category.init({
     name: DataTypes.STRING,
     image: DataTypes.STRING,
-    isActive: DataTypes.BOOLEAN
+    isActive: DataTypes.BOOLEAN,
+    image_public_id: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Category',
