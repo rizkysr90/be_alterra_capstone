@@ -2,8 +2,10 @@ require('dotenv').config()
 const morgan = require('morgan')
 const express = require('express')
 const app = express()
-
+const cors = require('cors')
 const router = require('./src/router/index');
+
+app.use(cors())
 app.use(morgan(function (tokens, req, res) {
     return [
         tokens.method(req, res),
