@@ -14,10 +14,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey : 'product_id'
       }
       const foreignKeyBuyerOrder = {
-        foreignKey : 'buyer_id'
+        foreignKey : 'buyer_id',
+        as : 'Buyers'
       }
       const foreignKeySellerOrder = {
-        foreignKey : 'seller_id'
+        foreignKey : 'seller_id',
+        as : 'Sellers'
       }
       // define association here
       const UserSeller = models.User;

@@ -12,5 +12,10 @@ module.exports = {
         return [
             query('page','page harus integer').isInt()
         ]
+    },
+    getById() {
+        return [
+            param('order_id','parameter order_id harus integer').isInt()
+        ]
     }
 }

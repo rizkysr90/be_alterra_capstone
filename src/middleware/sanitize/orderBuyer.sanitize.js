@@ -9,5 +9,10 @@ module.exports = {
         return [
             query('page').toInt()
         ]
+    },
+    getById() {
+        return [
+            param('order_id').toInt()
+        ]
     }
 }

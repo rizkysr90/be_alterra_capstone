@@ -27,6 +27,19 @@ module.exports = {
                 // Verifikasi apakah user yang membeli product sama dengan yang menjualnya
                 return res.status(400).json(response.error(400,'Tidak boleh membeli barang sendiri'))
             }
+            const isDuplicateOrder = await Order.findOne({
+                where : {
+                    buyer_id : req.body.buyer_id,
+                    seller_id : req.body.seller_id,
+                    product_id : req.body.product_id,
+                    status : null
+                }
+            })
+            if (isDuplicateOrder) {
+                // Verifikasi apakah user melakukan duplikasi order dengan product yang sama
+                return res.status(400).json(response.error(400,'ada order yang belum diproses dengan produk yang sama'))
+            }
+
             await Order.create(req.body);
             return res.status(201).json(response.success(201,'Harga tawaranmu berhasil dikirim ke penjual'))
         } catch (error) {
@@ -39,6 +52,7 @@ module.exports = {
              // pagination memiliki 2 parameter,page dan row
             // page diambil dari query,row di set ke 12
             const {page,row} = pagination(req.query.page,12);
+            // Mengambil data user id yang login dari JWT 
             const idUser = req.user.id;
 
             const options = {
@@ -48,6 +62,7 @@ module.exports = {
                 include : [
                     {
                         model : User,
+                        as : 'Buyers',
                         attributes: {exclude: ['password','updatedAt']},
                         include : [
                             {
@@ -72,6 +87,7 @@ module.exports = {
                     },
                     {
                         model : User,
+                        as : 'Sellers',
                         attributes: {exclude: ['password','updatedAt']},
                         include : [
                             {
@@ -89,9 +105,78 @@ module.exports = {
             return res.status(200).json(response.success(200,findOrder));
         } catch (error) {
             console.log(error)
-            res.status(500).json(response.error(500,'Internal Server Error'))
+            return res.status(500).json(response.error(500,'Internal Server Error'))
         }
-       
-        
+    },
+    async getOrderById(req,res) {
+        try {
+            // Mengambil id order dari req.param 
+            const orderId = req.params.order_id;
+            // Mengambil id user dari JWT
+            const idUser = req.user.id;
+
+            const options = {
+                where : {
+                    // Convert it to number because the default is string
+                    id : +orderId
+                },
+                include : [
+                    {
+                        model : User,
+                        as : 'Buyers',
+                        attributes: {exclude: ['password','updatedAt']},
+                        include : [
+                            {
+                                model : City,
+                                attributes: {exclude: ['createdAt','updatedAt']}
+                            }
+                        ]
+                    },
+                    {
+                        model : Product,
+                        attributes:{exclude : ['createdAt','updatedAt']},
+                        include: [
+                            {
+                                model: Product_image,
+                                attributes: ['id', 'name', 'url_image', 'product_id']
+                            },
+                            {
+                                model : Category,
+                            }
+                        ],
+                        
+                    },
+                    {
+                        model : User,
+                        as : 'Sellers',
+                        attributes: {exclude: ['password','updatedAt']},
+                        include : [
+                            {
+                                model : City,
+                                attributes: {exclude: ['createdAt','updatedAt']}
+                            }
+                        ]
+                    },
+                ]
+               
+        }
+        const findOrder = await Order.findOne(options);
+        if (!findOrder) {
+            // Cek apakah order dengan id x ditemukan
+            return res.status(404).json(response.error(404,'order not found'))
+        }
+        if (findOrder.buyer_id !== idUser) {
+            // Cek apakah order dengan id x adalah milik user yang login
+            return res.status(401).json(response.error(401,'you dont have access'))
+        }
+        return res.status(200).json(response.success(200,findOrder));
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json(response.error(500,'Internal Server Error'))
+        }
+    },
+    async getOrderByProductId(req,res) {
+        return res.status(200).json({'Hello' : 'HELLO'})
     }
 }
