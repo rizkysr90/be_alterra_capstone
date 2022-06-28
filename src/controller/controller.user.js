@@ -85,6 +85,8 @@ const login = async (req,res) => {
         }
         // Jika password sesuai,server membuat jwt token untuk authorization
         const jwt = issueJWT(findUser);
+        // add id to response body
+        jwt.id = findUser.id
         return res.status(200).json(response.success(200,jwt));
     } catch (err) {
         console.log(err);
