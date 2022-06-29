@@ -7,13 +7,13 @@ describe('Endpoint login user', () => {
         const response = await request(app)
         .post(`${process.env.BASE_URL}/${process.env.URL_ROUTER_LOGIN}`)
         .send({
-                email : "rqizkiiqq@gmail.com",
-                password : "rqizkiiqq123456"
+                email : "user1@gmail.com",
+                password : "123456789"
             })
         .set('Accept', 'application/json')
 
         const {code, data} = response.body
-        expect(response.status).toBe(200)
+        expect(code).toBe(200)
     })
 
     // negatif test
@@ -27,7 +27,7 @@ describe('Endpoint login user', () => {
         .set('Accept', 'application/json')
         
         const {code, message} = response.body
-        expect(response.status).toBe(404);
+        expect(code).toBe(404);
         expect(message).toBe(`User not found`)
     })
 
@@ -35,13 +35,13 @@ describe('Endpoint login user', () => {
         const response = await request(app)
         .post(`${process.env.BASE_URL}/${process.env.URL_ROUTER_LOGIN}`)
         .send({
-            email : "angel@gmail.com",
-            password : "adaangle1234567",
+            email : "user1@gmail.com",
+            password : "987654321",
             })
         .set('Accept', 'application/json')
 
         const {code, message} = response.body
-        expect(response.status).toBe(400);
+        expect(code).toBe(400);
         expect(message).toBe(`Password tidak sesuai`)
     })
 })
