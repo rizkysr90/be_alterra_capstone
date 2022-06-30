@@ -3,7 +3,7 @@ function pagination(page,row) {
         row = 10;
     }
     // Setting default row,jadi dalam 1 page secara default ada 10 row data
-    if (page === undefined || page === "") {
+    if (page === undefined || page === "" || typeof page === typeof "string") {
         page = 1;
     }
     

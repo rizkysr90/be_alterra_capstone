@@ -63,7 +63,7 @@ module.exports = {
                     {
                         model : User,
                         as : 'Buyers',
-                        attributes: {exclude: ['password','updatedAt']},
+                        attributes: {exclude: ['email','phone_number','password','updatedAt']},
                         include : [
                             {
                                 model : City,
@@ -88,7 +88,7 @@ module.exports = {
                     {
                         model : User,
                         as : 'Sellers',
-                        attributes: {exclude: ['password','updatedAt']},
+                        attributes: {exclude: ['email','phone_number','password','updatedAt']},
                         include : [
                             {
                                 model : City,
@@ -124,7 +124,7 @@ module.exports = {
                     {
                         model : User,
                         as : 'Buyers',
-                        attributes: {exclude: ['password','updatedAt']},
+                        attributes: {exclude: ['email','phone_number','password','updatedAt']},
                         include : [
                             {
                                 model : City,
@@ -149,7 +149,7 @@ module.exports = {
                     {
                         model : User,
                         as : 'Sellers',
-                        attributes: {exclude: ['password','updatedAt']},
+                        attributes: {exclude: ['email','phone_number','password','updatedAt']},
                         include : [
                             {
                                 model : City,
