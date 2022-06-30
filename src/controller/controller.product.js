@@ -9,8 +9,10 @@ const getProductAll = async (req, res) => {
         // Membuat Variabel page yang telah di inputkan user
         // 12 adalah row nya
         const {page,row} = pagination(req.query.page,12)
-        // Mengikuti design yang ada di figma
+        const categoryIdByQuery = +req.query.category;
+        const searchByNameQuery = req.query.search;
         
+        // Mengikuti design yang ada di figma
         // opsi yang digunakakan untuk menampilkan user 
         const options = {
             where: {
@@ -42,13 +44,22 @@ const getProductAll = async (req, res) => {
             offset: page
             
         }
-    
+        // Handle jika ada query category
+        if (categoryIdByQuery) {
+            options.where.id_category = categoryIdByQuery;
+        }
+        // Handle jika ada query search
+        if (searchByNameQuery) {
+            options.where.name =  {
+                [Op.iLike]: `%${searchByNameQuery}%`
+            }
+        }
         // memangil semua data di tabel product dan foreign keynya 
         const getDataProductAll = await Product.findAll(options)
 
-        if(getDataProductAll.length === 0 || !getDataProductAll){
-            return res.status(404).json(response.error(404, 'Product not found'))
-        }
+        // if(getDataProductAll.length === 0 || !getDataProductAll){
+        //     return res.status(404).json(response.error(404, 'Product not found'))
+        // }
     
         // menampilkan response semua data jika berhasil
         res.status(200).json(response.success(200, getDataProductAll))
