@@ -9,8 +9,10 @@ const getProductAll = async (req, res) => {
         // Membuat Variabel page yang telah di inputkan user
         // 12 adalah row nya
         const {page,row} = pagination(req.query.page,12)
-        // Mengikuti design yang ada di figma
+        const categoryIdByQuery = +req.query.category;
+        const searchByNameQuery = req.query.search;
         
+        // Mengikuti design yang ada di figma
         // opsi yang digunakakan untuk menampilkan user 
         const options = {
             where: {
@@ -42,13 +44,22 @@ const getProductAll = async (req, res) => {
             offset: page
             
         }
-    
+        // Handle jika ada query category
+        if (categoryIdByQuery) {
+            options.where.id_category = categoryIdByQuery;
+        }
+        // Handle jika ada query search
+        if (searchByNameQuery) {
+            options.where.name =  {
+                [Op.iLike]: `%${searchByNameQuery}%`
+            }
+        }
         // memangil semua data di tabel product dan foreign keynya 
         const getDataProductAll = await Product.findAll(options)
 
-        if(getDataProductAll.length === 0 || !getDataProductAll){
-            return res.status(404).json(response.error(404, 'Product not found'))
-        }
+        // if(getDataProductAll.length === 0 || !getDataProductAll){
+        //     return res.status(404).json(response.error(404, 'Product not found'))
+        // }
     
         // menampilkan response semua data jika berhasil
         res.status(200).json(response.success(200, getDataProductAll))
@@ -60,80 +71,6 @@ const getProductAll = async (req, res) => {
         return res.status(500).json(response.error(500, 'Internal Server Error'))
     }
 }
-
-const getProducByCategory = async(req, res) => {
-    try{
-        // Membuat Variabel page yang telah di inputkan user
-        // 12 adalah row nya
-        const {page,row} = pagination(req.query.page,12)
-        // Mengikuti design yang ada di figma
-
-
-        // mengambil id category yang dimasukan user lalu ditaru ke variabels
-        const id_category = req.query.category
-
-        // opsi mengecek data category sesuai id
-        const optionsCategory = {
-            where: {
-                id: id_category,
-                
-            }
-        }
-
-        // mengecek jika id category ditemukan atau tidak
-        const nullCategory = await Category.findOne(optionsCategory)
-
-        // error headling jika id category tidak ditemukan
-        if (nullCategory === null) {
-            return res.status(401).json(response.error(401,`id category ${id_category} Tidak Ditemukan`));
-        }
-
-        const opsiGetData = {
-            where: {
-                id: id_category,
-                isActive: true,
-                status: true
-            },
-            // membuat agar yang di tampilkan hanya di dalam attribute
-            attributes: {
-                exclude: ['createdAt','updatedAt']
-            },
-            include: [
-                {
-                    model: Product_image,
-                    attributes: ['id', 'name', 'url_image', 'product_id']
-                },
-                {
-                    model : User,
-                    attributes: {exclude: ['phone_number','email','password','updatedAt']},
-                },
-                {
-                    model : Category
-                }
-            ],
-             // membuat pagination 
-             limit: row,
-             offset: page
-        }
-        
-        const getDataCategoryById = await Product.findAll(opsiGetData)
-
-        if (!getDataCategoryById) {
-            res.status(404).json(response.error(404, 'Product not found'))
-        }
-      
-        // menampilkan response semua data jika berhasil
-        res.status(200).json(response.success(200, getDataCategoryById))
-
-    }catch(err){
-        // menampilkan error di console log
-        console.log(err)
-
-        // menampilkan response semua data jika gagal
-        return res.status(500).json(response.error(500), 'Internal Server Error')
-    }
-}
-
 const getProducById = async (req, res) => {
     try{
         // mengambil id yang dimasukan user lalu ditaru ke variabels
@@ -192,73 +129,15 @@ const getProducById = async (req, res) => {
         console.log(err)
 
         // menampilkan response semua data jika gagal
-        return res.status(500).json(response.error(500), 'Internal Server Error')
+        return res.status(500).json(response.error(500, 'Internal Server Error'))
     }
 }
 
-const getProducBySerach = async (req, res) => {
-    try{
-        // Membuat Variabel page yang telah di inputkan user
-        // 12 adalah row nya
-        const {page,row} = pagination(req.query.page,12)
-        // Mengikuti design yang ada di figma
 
-        // menambkap input search dari user
-        const name = req.query.search
-
-        // opsi yang digunakakan untuk menampilkan product
-        const options = {
-            where: {
-                "name": {
-                    [Op.iLike]: `%${name}`,
-                },
-                isActive: true,
-                status: true
-            },
-            // membuat agar yang di tampilkan hanya di dalam attribute
-            attributes: ['id', 'name', 'price', 'description', 'isActive', 'status', 'id_user', 'id_category'],
-                    // menampilkan foreig key product image yang ber primary key di product
-                    include: [
-                        {
-                            model: Product_image,
-                            attributes: ['id', 'name', 'url_image', 'product_id']
-                        },
-                        {
-                            model : User,
-                            attributes: {exclude: ['phone_number','email','password','updatedAt']},
-                        },
-                        {
-                            model : Category,
-                        }
-                    ],
-            // membuat pagination 
-            limit: row,
-            offset: page
-        }
-
-        // memangil satu data by id di tabel product dan foreign keynya
-        const getDataProducTByname = await Product.findAll(options)
-
-        if (getDataProducTByname === null) {
-            return res.status(401).json(response.error(401,`name ${name} Tidak Ditemukan`));
-        }
-
-        // menampilkan response semua data jika berhasil
-        res.status(200).json(response.success(200, getDataProducTByname))
-
-       
-    }catch(err){
-        console.log(err)
-
-        return res.status(500).json(response.error(500), 'Internal Server Error')
-    }
-}
 
 
 
 module.exports = {
     getProductAll,
-    getProducByCategory,
-    getProducById,
-    getProducBySerach
+    getProducById
 }
