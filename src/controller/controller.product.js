@@ -129,7 +129,7 @@ const getProducById = async (req, res) => {
         console.log(err)
 
         // menampilkan response semua data jika gagal
-        return res.status(500).json(response.error(500), 'Internal Server Error')
+        return res.status(500).json(response.error(500, 'Internal Server Error'))
     }
 }
 
