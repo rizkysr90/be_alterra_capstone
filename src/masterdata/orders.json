@@ -1,0 +1,30 @@
+[
+    {
+      "price" : 70000,
+      "status" : null,
+      "product_id" : 8,
+      "buyer_id" : 1,
+      "seller_id" : 2
+    },
+    {
+      "price" : 50000,
+      "status" : null,
+      "buyer_id": 1,
+      "product_id" : 5,
+      "seller_id" : 2
+    },
+    {
+      "price" : 1000000,
+      "status" : null,
+      "buyer_id" : 2,
+      "product_id" : 1,
+      "seller_id" : 1
+    },
+    {
+      "price" : 5000000,
+      "buyer_id" : 2,
+      "status" : null,
+      "product_id" : 2,
+      "seller_id" : 1
+    }
+  ]
