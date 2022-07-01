@@ -16,7 +16,7 @@ const dataProductAllTerjual = async (req, res) => {
     try{
         // Membuat Variabel page yang telah di inputkan user
         // 12 adalah row nya
-        const {page,row} = pagination(req.query.page,12)
+        const {page,row} = pagination(req.query.page,req.query.row)
         // Mengikuti design yang ada di figma
         
         // opsi yang digunakakan untuk menampilkan user 
@@ -76,7 +76,7 @@ const dataProductAll = async (req, res) => {
         const dataUser = req.user;
         // Membuat Variabel page yang telah di inputkan user
         // 12 adalah row nya
-        const {page,row} = pagination(req.query.page,12)
+        const {page,row} = pagination(req.query.page,req.query.row)
         // Mengikuti design yang ada di figma
         
         // opsi yang digunakakan untuk menampilkan product

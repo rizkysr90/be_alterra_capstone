@@ -8,7 +8,7 @@ const getProductAll = async (req, res) => {
     try{
         // Membuat Variabel page yang telah di inputkan user
         // 12 adalah row nya
-        const {page,row} = pagination(req.query.page,12)
+        const {page,row} = pagination(req.query.page,req.query.row)
         const categoryIdByQuery = +req.query.category;
         const searchByNameQuery = req.query.search;
         

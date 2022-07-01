@@ -8,7 +8,7 @@ const getAllDataCities = async (req,res) => {
         // Membuat fitur pagination dengan data yang diambil dari url query dengan nama page
         // fungsi pagination mengembalikan,data page dan row yang akan digunakan untuk pengambilan di db
         // req.query.page adalah data yang diberikan di url untuk menentukan offset database
-        const {page,row} = pagination(req.query.page)
+        const {page,row} = pagination(req.query.page,req.query.row)
         const dataCities = await City.findAll({
             attributes : {
                 exclude : ['createdAt','updatedAt']
@@ -34,7 +34,7 @@ const searchByName = async (req,res) => {
         // Membuat fitur pagination dengan data yang diambil dari url query dengan nama page
         // fungsi pagination mengembalikan,data page dan row yang akan digunakan untuk pengambilan di db
         // req.query.page adalah data yang diberikan di url untuk menentukan offset database
-        const {page,row} = pagination(req.query.page)
+        const {page,row} = pagination(req.query.page,req.query.row)
         // Mengambil data query params yaitu name pada url yang menentukan data yang ingin dicari oleh user
         let {name} = req.query;
         // Convert data query params ke uppercase karna didatabase datanya berupa huruf besar semua
