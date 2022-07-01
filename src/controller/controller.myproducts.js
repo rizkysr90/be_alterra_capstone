@@ -66,6 +66,7 @@ const dataProductAll = async (req, res) => {
             }
 
         }
+        // Check apakah ada query filter by status 
         if (req.query.isActive)  {
             let isActive = req.query.isActive.toLowerCase();
             if (isActive === 'true') {
