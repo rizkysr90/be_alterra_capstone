@@ -8,7 +8,6 @@ const sanitationMyProducs = require('../middleware/validator/myProduct.sanitatio
 const authJWT = require('./../middleware/passport-jwt');
 
 router.get('/', authJWT, controllerProduct.dataProductAll)
-router.get('/terjual', authJWT, controllerProduct.dataProductAllTerjual)
 router.get('/:id', authJWT, controllerProduct.dataProductById)
 router.post('/', authJWT,upload.array('gambar'), MulterError,sanitationMyProducs.sanitationDataMyProduct, myproductsValidator.create(), validate, controllerProduct.createDataProduct)
 router.put('/:id', authJWT,upload.array('gambar'), MulterError,sanitationMyProducs.sanitationDataMyProduct, myproductsValidator.create(), validate, controllerProduct.updateDataProduct)
