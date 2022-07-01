@@ -8,7 +8,7 @@ const deleteAtCld = async (path,opts) => await cloudinary.deleteCloudinary(path)
 
 const getAllCategory = async (req, res) => {
   try {
-    const { page, row } = pagination(req.query.page, 12);
+    const { page, row } = pagination(req.query.page, req.query.row);
     const options = {
       order: [['name', 'ASC']],
       attributes: ['id', 'name', 'image', 'isActive'],
