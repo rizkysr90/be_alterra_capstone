@@ -1,5 +1,6 @@
 const response = require('./../utility/responseModel');
-const {Product,Order} = require('./../models/');
+const {Product,Order,City,Product_image,User,Category} = require('./../models/');
+const pagination = require('./../utility/pagination');
 module.exports = {
     async createOrder(req,res) {
         try {
@@ -32,5 +33,65 @@ module.exports = {
             console.error(error)
             res.status(500).json(response.error(500,'Internal Server Error'));
         }
+    },
+    async getAllOrder(req,res) {
+        try {
+             // pagination memiliki 2 parameter,page dan row
+            // page diambil dari query,row di set ke 12
+            const {page,row} = pagination(req.query.page,12);
+            const idUser = req.user.id;
+
+            const options = {
+                where : {
+                    buyer_id : idUser
+                },
+                include : [
+                    {
+                        model : User,
+                        attributes: {exclude: ['password','updatedAt']},
+                        include : [
+                            {
+                                model : City,
+                                attributes: {exclude: ['createdAt','updatedAt']}
+                            }
+                        ]
+                    },
+                    {
+                        model : Product,
+                        attributes:{exclude : ['createdAt','updatedAt']},
+                        include: [
+                            {
+                                model: Product_image,
+                                attributes: ['id', 'name', 'url_image', 'product_id']
+                            },
+                            {
+                                model : Category,
+                            }
+                        ],
+                        
+                    },
+                    {
+                        model : User,
+                        attributes: {exclude: ['password','updatedAt']},
+                        include : [
+                            {
+                                model : City,
+                                attributes: {exclude: ['createdAt','updatedAt']}
+                            }
+                        ]
+                    },
+                ],
+                offset : page,
+                limit : row
+            }
+
+            const findOrder = await Order.findAll(options);
+            return res.status(200).json(response.success(200,findOrder));
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(response.error(500,'Internal Server Error'))
+        }
+       
+        
     }
 }

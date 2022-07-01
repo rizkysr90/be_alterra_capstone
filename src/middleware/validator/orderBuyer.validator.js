@@ -7,5 +7,10 @@ module.exports = {
             ,'seller_id,buyer_id,product_id,price wajib diisi')
             .notEmpty()
         ]
+    },
+    getAll() {
+        return [
+            query('page','page harus integer').isInt()
+        ]
     }
 }

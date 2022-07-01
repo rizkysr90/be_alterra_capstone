@@ -4,5 +4,10 @@ module.exports = {
         return [
             body(['buyer_id','seller_id','price','product_id']).toInt()
         ]
+    },
+    getAll() {
+        return [
+            query('page').toInt()
+        ]
     }
 }

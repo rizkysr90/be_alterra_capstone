@@ -11,5 +11,12 @@ router.route(`${process.env.URL_ROUTER_ORDER}`)
         validate,
         orderBuyerController.createOrder
     )
+router.route('/')
+    .get(authJWT,
+        orderBuyerSanitasi.getAll(),
+        orderBuyerValidator.getAll(),
+        validate,
+        orderBuyerController.getAllOrder
+    )
 
 module.exports = router;
