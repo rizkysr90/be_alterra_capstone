@@ -51,7 +51,7 @@ module.exports = {
         try {
              // pagination memiliki 2 parameter,page dan row
             // page diambil dari query,row di set ke 12
-            const {page,row} = pagination(req.query.page,12);
+            const {page,row} = pagination(req.query.page,req.query.row);
             // Mengambil data user id yang login dari JWT 
             const idUser = req.user.id;
 
