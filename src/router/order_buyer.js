@@ -19,10 +19,10 @@ router.route(`${process.env.URL_ROUTER_ORDER}/:order_id`)
         validate,
         orderBuyerController.getOrderById    
     )
-router.route(`${process.env.URL_ROUTER_ORDER}/:product_id`)
-    .get(
-        orderBuyerController.getOrderByProductId    
-    )
+// router.route(`${process.env.URL_ROUTER_ORDER}/:product_id`)
+//     .get(
+//         orderBuyerController.getOrderByProductId    
+//     )
 router.route('/')
     .get(authJWT,
         orderBuyerSanitasi.getAll(),

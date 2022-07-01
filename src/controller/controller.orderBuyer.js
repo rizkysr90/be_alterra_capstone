@@ -175,8 +175,8 @@ module.exports = {
             console.error(error);
             return res.status(500).json(response.error(500,'Internal Server Error'))
         }
-    },
-    async getOrderByProductId(req,res) {
-        return res.status(200).json({'Hello' : 'HELLO'})
     }
+    // async getOrderByProductId(req,res) {
+    //     return res.status(200).json({'Hello' : 'HELLO'})
+    // }
 }
