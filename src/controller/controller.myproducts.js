@@ -382,12 +382,6 @@ const updateDataProduct = async (req, res) => {
         // Cek apakah 
         // menangkap jika tidak ada gambar yang dimasukan
         if (files.length === 0) {
-            // error headling jika gambar yang dimasukan tidak ada tau lebih dari 4
-            if (files.length > 4) {
-                // Function remove ada dipaling atas
-                removeFileUploadedByMulter(req.files);
-                return res.status(401).json(response.error(401, 'Gambar yang di masukan lebih dari 4'))
-            }
             
             // melakukan update pada tabel product sesuai id yang dimasukan
             const updateByProduct = await Product.update(options,
@@ -427,6 +421,12 @@ const updateDataProduct = async (req, res) => {
             return res.status(200).json(response.success(200,'Data Product Berhasil Di Perbarui'))
         }
 
+        // error headling jika gambar yang dimasukan tidak ada tau lebih dari 4
+        if (files.length > 4) {
+            // Function remove ada dipaling atas
+            removeFileUploadedByMulter(req.files);
+            return res.status(401).json(response.error(401, 'Gambar yang di masukan lebih dari 4'))
+        }
 
         // update data Product jika user memasukan gambar
         const updateByProduct = await Product.update(options,
