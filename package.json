@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon ./bin/www",
     "start": "node ./bin/www",
-    "test": "jest"
+    "test": "jest",
+    "setUpTesting": "cross-env NODE_ENV=test npx sequelize db:create && cross-env NODE_ENV=test npx sequelize-cli db:migrate && cross-env NODE_ENV=test sequelize db:seed:all",
+    "resetTest": "cross-env NODE_ENV=test npx sequelize-cli db:migrate:undo:all && cross-env NODE_ENV=test npx sequelize-cli db:migrate && cross-env NODE_ENV=test sequelize db:seed:all "
   },
   "repository": {
     "type": "git",
@@ -38,5 +40,8 @@
     "sequelize-cli": "^6.4.1",
     "supertest": "^6.2.3",
     "test": "^3.0.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
