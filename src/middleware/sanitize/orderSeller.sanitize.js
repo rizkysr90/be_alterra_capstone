@@ -1,7 +1,7 @@
 const { body, param, query } = require('express-validator');
 const getAll = () => {
     return [
-        query('status').toInt()
+        query(['status','done']).toInt()
     ]
 }
 const update = () => {

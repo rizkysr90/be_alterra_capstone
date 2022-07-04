@@ -22,6 +22,10 @@ router.route('/orders/:order_id')
         validate,
         orderSellerController.updateOrder
     )
+router.route('/verify/:order_id')
+    .put(
+        authJWT
+    )
 
 
 

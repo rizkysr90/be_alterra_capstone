@@ -7,20 +7,13 @@ const getAllOrder = async (req,res) => {
         // Logika untuk pagination
         const {page,row} = pagination(req.query.page,req.query.row);
         // status query untuk filter berdasarkan status order
-        let statusOrder = req.query.status;
+        const{status : statusOrder, done : isDone} = req.query;
+    
         // mengambil data user yang login
         const dataUser = req.user;
-        // jika status order tidak valid / null
-        if (!statusOrder || isNaN(statusOrder)) {
-            // statusOrder null = sedang diproses
-            // statusOrder 1 = terjual
-            // statusOrder 0 = dibatalkan
-            statusOrder = null
-        }
         const options = {
             where : {
                 seller_id : dataUser.id,
-                status : statusOrder
             },
             include : [
                 {
@@ -64,7 +57,22 @@ const getAllOrder = async (req,res) => {
             limit : row
 
         }
-
+        if (statusOrder !== undefined && !isNaN(statusOrder) ) {
+            // Untuk filter by status order
+            // statusOrder null = sedang diproses
+            // statusOrder 1 = terjual
+            // statusOrder 0 = dibatalkan
+           options.where.status = statusOrder;
+        } 
+        if (isDone !== undefined && !isNaN(isDone)) {
+            // untuk filter apakah transaksi sudah selesai apa belum
+            // isDone null = sedang diproses
+            // isDone 1 = selesai terjual
+            // isDone 0 = selesai dibatalkan
+            options.where.is_done = isDone;
+        } else {
+            options.where.is_done = null;
+        }
         const findSales =  await Order.findAll(options);
         return res.status(200).json(response.success(200,findSales));
     } catch (error) {
@@ -167,12 +175,24 @@ const updateOrder = async (req,res) => {
             // Cek apakah order yang masuk dengan id x adalah milik user yang login sebagai penjual
             return res.status(401).json(response.error(401,'you dont have access'))
         }
+        if (findOrder.is_done !== null || findOrder.status !== null) {
+            // Cek apakah order sudah selesai transaksi atau belum
+            return res.status(401).json(response.error(401,'order sudah selesai,anda tidak bisa merubahnya lagi'))
+        }
         const options = {
             where : {
                 id : orderId
             }
         }
-        await Order.update({status},options)
+        let dataToBeUpdated = {
+            status
+        }
+        if (status === 0) {
+            // Kalau statusnya dibatalkan oleh penjual maka transaksi seleseai
+            // dengan status 0 atau dibatalkan
+            dataToBeUpdated.is_done = 0
+        }
+        await Order.update(dataToBeUpdated,options)
         return res.status(200).json(response.success(200,'sukses update data'))
         
     } catch (error) {
