@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey : 'seller_id',
         as : 'Sellers'
       }
+
       // define association here
       const UserSeller = models.User;
       const UserBuyer = models.User;
