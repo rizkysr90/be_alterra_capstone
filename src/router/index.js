@@ -9,6 +9,7 @@ const routerCity = require('./city');
 const routerProduct = require('./product')
 const routerCategories = require('./categories');
 const routerOrderBuyer = require('./order_buyer')
+const routerOrderSeller =require('./orderSeller');
 
 router.use(`${process.env.URL_ROUTER_REGISTER}`,routerRegister)
 router.use(`${process.env.URL_ROUTER_USER}`, routerUser)
@@ -19,6 +20,7 @@ router.use(`${process.env.URL_ROUTER_CITY}`,routerCity)
 router.use(`${process.env.URL_ROUTER_PRODUCT}`, routerProduct)
 router.use(`${process.env.URL_ROUTER_CATEGORIES}`, routerCategories);
 router.use(`${process.env.URL_ROUTER_ORDER_BUYER}`, routerOrderBuyer)
+router.use(`${process.env.URL_ROUTER_ORDER_SELLER}`, routerOrderSeller);
 
 
 router.all('*',(req,res) => {
