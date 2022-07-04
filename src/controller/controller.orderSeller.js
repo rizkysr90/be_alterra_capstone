@@ -4,9 +4,13 @@ const {Order,City,User,Product,Product_image,Category} = require('./../models/')
 
 const getAllOrder = async (req,res) => {
     try {
-        const {page,row} = pagination(req.query.page,12);
+        // Logika untuk pagination
+        const {page,row} = pagination(req.query.page,req.query.row);
+        // status query untuk filter berdasarkan status order
         let statusOrder = req.query.status;
+        // mengambil data user yang login
         const dataUser = req.user;
+        // jika status order tidak valid / null
         if (!statusOrder || isNaN(statusOrder)) {
             // statusOrder null = sedang diproses
             // statusOrder 1 = terjual
@@ -79,13 +83,14 @@ const getByIdOrder = async (req,res) => {
         const options = {
             where : {
                 // Convert it to number because the default is string
-                id : +orderId
+                id : +orderId,
+
             },
             include : [
                 {
                     model : User,
                     as : 'Buyers',
-                    attributes: {exclude: ['email','phone_number','password','updatedAt']},
+                    attributes: {exclude: ['password','updatedAt']},
                     include : [
                         {
                             model : City,
@@ -130,7 +135,13 @@ const getByIdOrder = async (req,res) => {
         // Cek apakah order yang masuk dengan id x adalah milik user yang login sebagai penjual
         return res.status(401).json(response.error(401,'you dont have access'))
     }
-    return res.status(200).json(response.success(200,findOrder));
+    // Jika order belum sukses maka tidak boleh mengembalikan email dan phone number
+    let dataBuyer = findOrder.dataValues
+    if (dataBuyer.status !== 1) {    
+        delete dataBuyer.Buyers.dataValues.email
+        delete dataBuyer.Buyers.dataValues.phone_number    
+    }
+    return res.status(200).json(response.success(200,dataBuyer));
 
     } catch (error) {
         console.error(error);
@@ -138,8 +149,40 @@ const getByIdOrder = async (req,res) => {
     }
 
 }
+const updateOrder = async (req,res) => {
+    try {
+        const {order_id : orderId} = req.params;
+        const {status} = req.body;
+        const {id : userId} = req.user;
+        const findOrder = await Order.findOne({
+            where : {
+                id : orderId
+            }
+        })
+        if (!findOrder) {
+            // Cek apakah order dengan id x ditemukan
+            return res.status(404).json(response.error(404,'order not found'))
+        }
+        if (findOrder.seller_id !== userId) {
+            // Cek apakah order yang masuk dengan id x adalah milik user yang login sebagai penjual
+            return res.status(401).json(response.error(401,'you dont have access'))
+        }
+        const options = {
+            where : {
+                id : orderId
+            }
+        }
+        await Order.update({status},options)
+        return res.status(200).json(response.success(200,'sukses update data'))
+        
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json(response.error(500,'Internal Server Error'))
+    }
+}
 
 module.exports = {
     getAllOrder,
-    getByIdOrder
+    getByIdOrder,
+    updateOrder
 }
