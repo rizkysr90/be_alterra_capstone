@@ -43,7 +43,8 @@ module.exports = (sequelize, DataTypes) => {
     product_id: DataTypes.INTEGER,
     buyer_id: DataTypes.INTEGER,
     seller_id: DataTypes.INTEGER,
-    status: DataTypes.INTEGER
+    status: DataTypes.INTEGER,
+    is_done: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Order',
