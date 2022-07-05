@@ -5,12 +5,15 @@ module.exports = {
         return [
             body(['seller_id','buyer_id','product_id','price']
             ,'seller_id,buyer_id,product_id,price wajib diisi')
-            .notEmpty()
+            .notEmpty(),
+            body(['seller_id','buyer_id','product_id','price']
+            ,'seller_id,buyer_id,product_id,price wajib integer')
+            .isInt()
         ]
     },
     getAll() {
         return [
-            query('page','page harus integer').isInt()
+            query(['page','row'],'page harus integer').isInt()
         ]
     },
     getById() {

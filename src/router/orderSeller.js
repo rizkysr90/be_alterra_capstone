@@ -13,6 +13,7 @@ router.route('/')
 router.route('/orders/:order_id')
     .get(
         authJWT,
+        orderSellerSanitize.getById(),
         orderSellerController.getByIdOrder
     )
     .put(

@@ -7,7 +7,7 @@ module.exports = {
     },
     getAll() {
         return [
-            query('page').toInt()
+            query(['page','row']).toInt()
         ]
     },
     getById() {

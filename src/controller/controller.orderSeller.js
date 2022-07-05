@@ -5,10 +5,10 @@ const {Order,City,User,Product,Product_image,Category} = require('./../models/')
 const getAllOrder = async (req,res) => {
     try {
         // Logika untuk pagination
+        
         const {page,row} = pagination(req.query.page,req.query.row);
         // status query untuk filter berdasarkan status order
         const{status : statusOrder, done : isDone} = req.query;
-    
         // mengambil data user yang login
         const dataUser = req.user;
         const options = {
@@ -57,21 +57,24 @@ const getAllOrder = async (req,res) => {
             limit : row
 
         }
-        if (statusOrder !== undefined && !isNaN(statusOrder) ) {
+        if (statusOrder !== undefined && !isNaN(statusOrder) 
+            && (statusOrder === 0 || statusOrder === 1)) {
             // Untuk filter by status order
             // statusOrder null = sedang diproses
             // statusOrder 1 = terjual
             // statusOrder 0 = dibatalkan
+            if (statusOrder === 1 && isDone === undefined) {
+                options.where.is_done = null;
+            }
            options.where.status = statusOrder;
         } 
-        if (isDone !== undefined && !isNaN(isDone)) {
+        if (isDone !== undefined && !isNaN(isDone)
+            && (isDone === 0 || isDone === 1)) {
             // untuk filter apakah transaksi sudah selesai apa belum
             // isDone null = sedang diproses
             // isDone 1 = selesai terjual
             // isDone 0 = selesai dibatalkan
             options.where.is_done = isDone;
-        } else {
-            options.where.is_done = null;
         }
         const findSales =  await Order.findAll(options);
         return res.status(200).json(response.success(200,findSales));
@@ -83,7 +86,12 @@ const getAllOrder = async (req,res) => {
 
 const getByIdOrder = async (req,res) => {
     try {
+        if (req.params.order_id !== undefined && isNaN(req.params.order_id)) {
+            // order_id tidak boleh string / harus integer
+            return res.status(400).json(response.error(400,'order id tidak boleh string'))
+        }
         // Mengambil id order dari req.param 
+
         const orderId = req.params.order_id;
         // Mengambil id user dari JWT
         const idUser = req.user.id;
@@ -159,6 +167,10 @@ const getByIdOrder = async (req,res) => {
 }
 const updateOrder = async (req,res) => {
     try {
+        if (req.params.order_id !== undefined && isNaN(req.params.order_id)) {
+            // order_id tidak boleh string / harus integer
+            return res.status(400).json(response.error(400,'order id tidak boleh string'))
+        }
         const {order_id : orderId} = req.params;
         const {status} = req.body;
         const {id : userId} = req.user;
