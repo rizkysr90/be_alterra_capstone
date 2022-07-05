@@ -12,12 +12,19 @@ const update = () => {
 }
 const getById = () => {
     return [
-        param('order)id').toInt()
+        param('order_id').toInt()
+    ]
+}
+const verifyOrder = () => {
+    return [
+        param('order_id').toInt(),
+        body('is_done').toInt()
     ]
 }
 
 module.exports = {
     getAll,
     update,
-    getById
+    getById,
+    verifyOrder
 }
