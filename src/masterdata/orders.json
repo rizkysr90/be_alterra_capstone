@@ -54,6 +54,18 @@
     "product_id" : 9,
     "seller_id" : 4,
     "status" : 1
+  },
+  {
+    "price" : 2500000,
+    "buyer_id": 2,
+    "product_id" : 9,
+    "seller_id" : 4
+  },
+  {
+    "price" : 3500000,
+    "buyer_id": 3,
+    "product_id" : 9,
+    "seller_id" : 4
   }
   
 ]
