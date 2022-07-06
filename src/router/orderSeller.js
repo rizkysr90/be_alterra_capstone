@@ -13,6 +13,7 @@ router.route('/')
 router.route('/orders/:order_id')
     .get(
         authJWT,
+        orderSellerSanitize.getById(),
         orderSellerController.getByIdOrder
     )
     .put(
@@ -24,7 +25,11 @@ router.route('/orders/:order_id')
     )
 router.route('/verify/:order_id')
     .put(
-        authJWT
+        authJWT,
+        orderSellerSanitize.verifyOrder(),
+        orderSellerValidator.verifyOrder(),
+        validate,
+        orderSellerController.verifyOrder
     )
 
 

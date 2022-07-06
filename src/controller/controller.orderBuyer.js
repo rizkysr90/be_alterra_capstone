@@ -27,18 +27,10 @@ module.exports = {
                 // Verifikasi apakah user yang membeli product sama dengan yang menjualnya
                 return res.status(400).json(response.error(400,'Tidak boleh membeli barang sendiri'))
             }
-            const isDuplicateOrder = await Order.findOne({
-                where : {
-                    buyer_id : req.body.buyer_id,
-                    seller_id : req.body.seller_id,
-                    product_id : req.body.product_id,
-                    status : null
-                }
-            })
-            if (isDuplicateOrder) {
-                // Verifikasi apakah user melakukan duplikasi order dengan product yang sama
-                return res.status(400).json(response.error(400,'ada order yang belum diproses dengan produk yang sama'))
-            }
+           if (findProduct.status === false || findProduct.isActive === false) {
+                // Jika produknya tidak aktif / statusnya terjual maka user tidak bisa melakukan transaksi dengan produk tersebut
+                return res.status(400).json(response.error(400,'produk tidak aktif atau sudah terjual'))
+           }
 
             await Order.create(req.body);
             return res.status(201).json(response.success(201,'Harga tawaranmu berhasil dikirim ke penjual'))
