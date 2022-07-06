@@ -84,8 +84,8 @@
     "name" : "Xenia Aventador 2020 Bekas",
     "price" : 8000000,
     "description" : "Xenia aventador terkuat di Bumi",
-    "isActive" : true,
-    "status" : true,
+    "isActive" : false,
+    "status" : false,
     "id_user": 4,
     "id_category" : 2
   }
