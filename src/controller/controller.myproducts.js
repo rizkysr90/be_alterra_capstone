@@ -332,7 +332,7 @@ const updateDataProduct = async (req, res) => {
         }  
 
         // deklarasi variabel yang telah dinputkan oleh user untuk database product
-        const {name, price, description, gambar, isActive, status, id_user, id_category} = req.body
+        const {name, price, description, isActive, status, id_user, id_category} = req.body
 
         // deklarasi gambar yang telah di input user
         const files = req.files;
@@ -345,7 +345,7 @@ const updateDataProduct = async (req, res) => {
                 isActive: isActive,
                 status: status,
                 id_user: id_user,
-                // id_category: id_category
+                id_category: id_category
         }
         // Melakukan validasi apakah user yang mengupdate produk merupakan pemilik produk tersebut
         // idnull merupakan data produk yang dipakai saat mengecak apakah ada produk atau tidak
