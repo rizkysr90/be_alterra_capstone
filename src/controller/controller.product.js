@@ -1,5 +1,5 @@
 const { Product } = require('../models')
-const { Product_image,User,Category } = require('../models');
+const { Product_image,User,Category,Order } = require('../models');
 const response = require('../utility/responseModel');
 const pagination = require('./../utility/pagination');
 const { Op } = require('sequelize');
@@ -133,11 +133,42 @@ const getProducById = async (req, res) => {
     }
 }
 
+const onProcess = async (req,res) => {
+    try {
+        // mendapatkan data id user melalui JWT token
+        const idUser = req.user.id;
+        const {product_id} = req.params
+
+        if (isNaN(product_id)) {
+            return res.status(400).json(response.error('400','url product_id harus integer'))
+        }
+        const findOrder = await Order.findOne({
+        where : {
+            buyer_id : idUser,
+            product_id,
+            status : {
+                [Op.or] : [null,1]
+            },
+            is_done : null 
+        }
+        })
+        if (findOrder) {
+            // Jika masih ada order yang sedang diproses maka tidak bisa melakukan order
+            return res.status(200).json(response.success(200,{onProcess : 1}));
+        }
+        return res.status(200).json(response.success(200,{onProcess : 0}))
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(response.error(500,'Internal Server Error'));
+    }
+}
+
 
 
 
 
 module.exports = {
     getProductAll,
-    getProducById
+    getProducById,
+    onProcess
 }
