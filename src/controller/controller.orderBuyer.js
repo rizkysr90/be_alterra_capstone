@@ -1,5 +1,6 @@
 const response = require('./../utility/responseModel');
 const {Product,Order,City,Product_image,User,Category} = require('./../models/');
+const {Op} = require('sequelize');
 const pagination = require('./../utility/pagination');
 module.exports = {
     async createOrder(req,res) {
@@ -30,6 +31,20 @@ module.exports = {
            if (findProduct.status === false || findProduct.isActive === false) {
                 // Jika produknya tidak aktif / statusnya terjual maka user tidak bisa melakukan transaksi dengan produk tersebut
                 return res.status(400).json(response.error(400,'produk tidak aktif atau sudah terjual'))
+           }
+           const findOrder = await Order.findOne({
+            where : {
+                buyer_id,
+                product_id,
+                status : {
+                    [Op.or] : [null,1]
+                },
+                is_done : null 
+            }
+           })
+           if (findOrder) {
+            // Jika masih ada order yang sedang diproses maka tidak bisa melakukan order
+            return res.status(400).json(response.error(400,`masih ada order yang belum selesai dengan jenis order yang sama di id order ${findOrder.id}`));
            }
 
             await Order.create(req.body);
