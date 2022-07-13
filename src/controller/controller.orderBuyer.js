@@ -56,6 +56,12 @@ module.exports = {
                         user_id: notifOrder.dataValues.buyer_id,
                         status: 0
                     })
+
+                    await Notification.create({
+                        notification_object_id: createNotifObject.id,
+                        user_id: notifOrder.dataValues.seller_id,
+                        status: 0
+                    })
                 }
             }
 
