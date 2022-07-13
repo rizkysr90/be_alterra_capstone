@@ -1,4 +1,4 @@
-const { Notification, Notification_types, Notification_object, Product, Order } = require('../models')
+const { Notification, Notification_types, Notification_object, Product, Order } = require('../models/')
 const response = require('../utility/responseModel')
 
 const getNotifikasiAll = async(req, res) => {
@@ -8,19 +8,19 @@ const getNotifikasiAll = async(req, res) => {
                 ['id', 'ASC'],
             ],
             attributes: ['id', 'notification_type_id', 'product_id', 'order_id', 'createdAt'],
-                // include: [
-                //     {
-                //         model : Notification,
-                //         // attributes: ['id', 'name', 'description', 'table']
-                //     },
-                //     {
-                //         model : Product,
-                //         attributes: {exclude: ['description']}
-                //     },
-                //     {
-                //         model : Order
-                //     }
-                // ]
+                include: [
+                    {
+                        model : Notification,
+                        // attributes: ['id', 'name', 'description', 'table']
+                    },
+                    {
+                        model : Product,
+                        attributes: {exclude: ['description']}
+                    },
+                    {
+                        model : Order
+                    }
+                ]
         }
 
         const getDataNotifikasiAll = await Notification_object.findAll(options)
