@@ -7,8 +7,11 @@ const getNotifikasiAll = async(req, res) => {
         const dataUserFromJWT = req.user;
 
         const options = {
+            where: {
+                id: dataUserFromJWT.id
+            },
             order: [
-                ['id', 'ASC'],
+                ['id', 'DESC'],
             ],
             attributes: ['id', 'notification_object_id', 'user_id', 'status', 'createdAt'],
                 include: [
@@ -27,13 +30,6 @@ const getNotifikasiAll = async(req, res) => {
                             }
                         ]
                         
-                    },
-                    {
-                        model : User,
-                        where: {
-                            id: dataUserFromJWT.id
-                        },
-                        attributes: {exclude: ['email','phone_number','password','updatedAt']},
                     }
                 ]
         }
