@@ -26,7 +26,12 @@ const getNotifikasiAll = async(req, res) => {
                                 model: Product
                             },
                             {
-                                model: Order
+                                model: Order,
+                                include: [
+                                    {
+                                        model: Product
+                                    }
+                                ]
                             }
                         ]
                         
