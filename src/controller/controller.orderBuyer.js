@@ -1,6 +1,10 @@
 const response = require('./../utility/responseModel');
+<<<<<<< HEAD
+const {Product,Order,City,Product_image,User,Category,Notification_object,Notification} = require('./../models/');
+=======
 const {Product,Order,City,Product_image,User,Category} = require('./../models/');
 const {Op} = require('sequelize');
+>>>>>>> e5f80b80facefe32d877289b2e008940e930f1b2
 const pagination = require('./../utility/pagination');
 module.exports = {
     async createOrder(req,res) {
@@ -47,7 +51,39 @@ module.exports = {
             return res.status(400).json(response.error(400,`masih ada order yang belum selesai dengan jenis order yang sama di id order ${findOrder.id}`));
            }
 
-            await Order.create(req.body);
+            const dataOrder = await Order.create(req.body);
+
+            const notifOrder = await Order.findOne({
+                where: {
+                    id: dataOrder.id
+                }
+            })
+
+            // Mengecek Jika Order Berhasil di buat
+            if(notifOrder){
+                // membuat tabel Notification_object jika Order Berhasil Dibuat
+                const createNotifObject = await Notification_object.create({
+                    notification_type_id: 2,
+                    product_id: null,
+                    order_id: notifOrder.dataValues.id 
+                })
+
+                if(createNotifObject){
+                    // membuat tabel Notification jika Ordet telah berhasil dibuat dan telah berhasil membuat tabel Notification_object
+                    await Notification.create({
+                        notification_object_id: createNotifObject.id,
+                        user_id: notifOrder.dataValues.buyer_id,
+                        status: 0
+                    })
+
+                    await Notification.create({
+                        notification_object_id: createNotifObject.id,
+                        user_id: notifOrder.dataValues.seller_id,
+                        status: 0
+                    })
+                }
+            }
+
             return res.status(201).json(response.success(201,'Harga tawaranmu berhasil dikirim ke penjual'))
         } catch (error) {
             console.error(error)

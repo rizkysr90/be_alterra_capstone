@@ -1,6 +1,6 @@
 const response = require('./../utility/responseModel');
 const pagination =require('./../utility/pagination');
-const {Order,City,User,Product,Product_image,Category,sequelize} = require('./../models/');
+const {Order,City,User,Product,Product_image,Category,sequelize,Notification_object,Notification} = require('./../models/');
 const { Op } = require('sequelize');
 const queryInterface = sequelize.getQueryInterface();
 
@@ -209,6 +209,33 @@ const updateOrder = async (req,res) => {
             dataToBeUpdated.is_done = 0
         }
         await Order.update(dataToBeUpdated,options)
+
+        // Melihat Apakah data Order Telah Berhasil Di Terima
+        const checkDataOrder = await Order.findOne({
+            where: {
+                id: orderId,
+                status: 1
+            }
+        })
+
+        if(checkDataOrder){
+            // membuat tabel Notification_object jika order telah diterima
+            const createNotifObject = await Notification_object.create({
+                notification_type_id: 3,
+                product_id: null,
+                order_id: checkDataOrder.dataValues.id 
+            })
+
+            if(createNotifObject){
+                // membuat tabel Notification jika order telah diterima dan telah berhasil membuat tabel Notification_object
+                await Notification.create({
+                    notification_object_id: createNotifObject.id,
+                    user_id: checkDataOrder.dataValues.buyer_id,
+                    status: 0
+                })
+            }
+        }
+
         return res.status(200).json(response.success(200,'sukses update data'))
         
     } catch (error) {

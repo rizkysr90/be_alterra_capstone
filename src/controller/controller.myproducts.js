@@ -1,5 +1,5 @@
 const { Product } = require('../models')
-const { Product_image,User,Category } = require('../models');
+const { Product_image,User, Category, Notification_object, Notification } = require('../models');
 const response = require('../utility/responseModel');
 const cloudinary = require('../utility/cloudinary');
 const pagination = require('./../utility/pagination');
@@ -292,6 +292,25 @@ const createDataProduct = async (req, res) => {
                     ]
         })
 
+        // mengecek jika jika product telah diterbitkan
+        if(dataProductSuccesCreate.dataValues.isActive === true) {
+            // membuat tabel Notification_object jika product telah diterbitkan
+            const createNotifObject = await Notification_object.create({
+                notification_type_id: 1,
+                product_id: dataProductSuccesCreate.dataValues.id,
+                order_id: null 
+            })
+
+            if(createNotifObject){
+                // membuat tabel Notification jika product telah diterbitkan dan telah berhasil membuat tabel Notification_object
+                await Notification.create({
+                    notification_object_id: createNotifObject.id,
+                    user_id: dataProductSuccesCreate.dataValues.id_user,
+                    status: 0
+                })
+            }
+        }
+
         // response jika semua proses berhasil
         res.status(201).json(response.success(201,dataProductSuccesCreate))
 
@@ -383,6 +402,25 @@ const updateDataProduct = async (req, res) => {
                 // Function remove ada dipaling atas
                 removeFileUploadedByMulter(req.files);
                 return res.status(404).json(response.success(404,'Data Product Gagal Di Perbarui'))
+            }
+
+            // mengecek jika jika product telah diterbitkan
+            if(isActive === true) {
+                // membuat tabel Notification_object jika product telah diterbitkan
+                const createNotifObject = await Notification_object.create({
+                    notification_type_id: 1,
+                    product_id: idnull.dataValues.id,
+                    order_id: null 
+                })
+
+                if(createNotifObject){
+                    // membuat tabel Notification jika product telah diterbitkan dan telah berhasil membuat tabel Notification_object
+                    await Notification.create({
+                        notification_object_id: createNotifObject.id,
+                        user_id: idnull.dataValues.id_user,
+                        status: 0
+                    })
+                }
             }
 
             // response jika semua proses berhasil
@@ -480,6 +518,25 @@ const updateDataProduct = async (req, res) => {
             removeFileUploadedByMulter(req.files);
              return res.status(404).json(response.error(404,'Data gambar Product gagal Di Perbarui'))
           }
+
+        // mengecek jika jika product telah diterbitkan
+        if(isActive === true) {
+            // membuat tabel Notification_object jika product telah diterbitkan
+            const createNotifObject = await Notification_object.create({
+                notification_type_id: 1,
+                product_id: idnull.dataValues.id,
+                order_id: null 
+            })
+
+            if(createNotifObject){
+                // membuat tabel Notification jika product telah diterbitkan dan telah berhasil membuat tabel Notification_object
+                await Notification.create({
+                    notification_object_id: createNotifObject.id,
+                    user_id: idnull.dataValues.id_user,
+                    status: 0
+                })
+            }
+        }
 
         // response jika semua proses berhasil
         return res.status(200).json(response.success(200,'Data Product Berhasil Di Perbarui'))
