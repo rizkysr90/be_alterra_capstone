@@ -8,7 +8,7 @@ const getNotifikasiAll = async(req, res) => {
 
         const options = {
             where: {
-                id: dataUserFromJWT.id
+                user_id: dataUserFromJWT.id
             },
             order: [
                 ['id', 'DESC'],
