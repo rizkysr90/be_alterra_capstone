@@ -1,10 +1,6 @@
 const response = require('./../utility/responseModel');
-<<<<<<< HEAD
 const {Product,Order,City,Product_image,User,Category,Notification_object,Notification} = require('./../models/');
-=======
-const {Product,Order,City,Product_image,User,Category} = require('./../models/');
 const {Op} = require('sequelize');
->>>>>>> e5f80b80facefe32d877289b2e008940e930f1b2
 const pagination = require('./../utility/pagination');
 module.exports = {
     async createOrder(req,res) {
