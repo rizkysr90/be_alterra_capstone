@@ -1,4 +1,4 @@
-const { Notification, Notification_types, Notification_object, Product, Order, User } = require('../models/')
+const { Notification, Notification_types, Notification_object, Product, Order, Product_image } = require('../models/')
 const response = require('../utility/responseModel')
 
 const getNotifikasiAll = async(req, res) => {
@@ -13,23 +13,41 @@ const getNotifikasiAll = async(req, res) => {
             order: [
                 ['id', 'DESC'],
             ],
-            attributes: ['id', 'notification_object_id', 'user_id', 'status', 'createdAt'],
+            attributes: ['id', 'user_id', 'status', 'createdAt'],
                 include: [
                     {
                         model : Notification_object,
+                        attributes: {exclude : ['id','createdAt','updatedAt']},
                         include: [
                             {
                                 model: Notification_types,
-                                attributes: {exclude: ['createdAt','updatedAt']},
+                                attributes: {exclude: ['name','table','createdAt','updatedAt']},
                             },
                             {
-                                model: Product
+                                model: Product,
+                                attributes : {exclude : ['description','isActive','status','id_user','id_category','createdAt','updatedAt']},
+                                include : [
+                                    {
+                                        model: Product_image,
+                                        attributes: ['url_image']
+                                    }
+                                   
+                                ]
                             },
                             {
                                 model: Order,
+                                attributes: {exclude : ['id','product_id','buyer_id','seller_id','createdAt','updatedAt']},
                                 include: [
                                     {
-                                        model: Product
+                                        model: Product,
+                                        attributes : {exclude : ['description','isActive','status','id_user','id_category','createdAt','updatedAt']},
+                                        include : [
+                                            {
+                                                model: Product_image,
+                                                attributes: ['url_image']
+                                            }
+                                           
+                                        ]
                                     }
                                 ]
                             }
