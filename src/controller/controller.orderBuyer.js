@@ -93,6 +93,8 @@ module.exports = {
             const {page,row} = pagination(req.query.page,req.query.row);
             // Mengambil data user id yang login dari JWT 
             const idUser = req.user.id;
+            const{status : statusOrder, done : isDone} = req.query;
+
 
             const options = {
                 where : {
@@ -138,6 +140,28 @@ module.exports = {
                 ],
                 offset : page,
                 limit : row
+            }
+            if (statusOrder !== undefined && !isNaN(statusOrder) 
+            && (statusOrder === 0 || statusOrder === 1)) {
+                // Untuk filter by status order
+                // statusOrder null = sedang diproses
+                // statusOrder 1 = terjual
+                // statusOrder 0 = dibatalkan
+                if (statusOrder === 1 && isDone === undefined) {
+                    options.where.is_done = null;
+                }
+                options.where.status = statusOrder;
+            } 
+            if (isDone !== undefined && !isNaN(isDone)
+            && (isDone === 0 || isDone === 1)) {
+                // untuk filter apakah transaksi sudah selesai apa belum
+                // isDone null = sedang diproses
+                // isDone 1 = selesai terjual
+                // isDone 0 = selesai dibatalkan
+                options.where.is_done = isDone;
+                console.log('HELLO');
+            } else {
+                options.where.is_done = null;
             }
 
             const findOrder = await Order.findAll(options);
