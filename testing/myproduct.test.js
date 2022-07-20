@@ -2,6 +2,7 @@ const app = require('../app')
 const request = require('supertest')
 
 let token = null;
+let newCreatedProductId = 0;
 // Login terlebih dahulu agar bisa mengakses product buyer
 beforeAll(function(done) {
     request(app)
@@ -30,7 +31,7 @@ beforeAll(function(done) {
 
         test('Get By All Terhual myproduct success', async() => {
             const response = await request(app)
-            .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}?page=1row=10&status=false&isActive=true`)
+            .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}?page=1row=10&status=false&isActive=false`)
             .set('Authorization', 'Bearer ' + token)
             
             const {code, data} = response.body
@@ -90,6 +91,7 @@ describe('Endpoint myproduct Create', () => {
 
 
         const {code, data} = response.body
+        newCreatedProductId = data.id;
         expect(code).toBe(201);
     }, 50000)
 
@@ -121,10 +123,10 @@ describe('Endpoint myproduct Create', () => {
 
 describe('Endpoint myproduct update', () => {
     // Positif Test
-    const id = 9;
+    const id = 1;
     test('update with image myproduct Success', async() => {
         const response = await request(app)
-        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${newCreatedProductId}`)
         .set('content-type', 'multipart/form-data')
         .set('Authorization', 'Bearer ' + token)
         .field('name', 'Rizky')
@@ -140,6 +142,7 @@ describe('Endpoint myproduct update', () => {
 
 
         const {code, data} = response.body
+        console.log(response.body)
         expect(code).toBe(200);
         expect(data).toBe('Data Product Berhasil Di Perbarui')
     }, 50000)
@@ -187,7 +190,7 @@ describe('Endpoint myproduct update', () => {
     }, 50000)
 
     test('update with image myproduct Failed image = 0 or image > 4', async() => {
-    const id = 9
+    const id = 1
         const response = await request(app)
         .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
         .set('content-type', 'multipart/form-data')
@@ -216,7 +219,7 @@ describe('Endpoint myproduct update', () => {
 describe('Endpoint myproduct delete', () => {
     // Positif Test
     test('delete myproduct Success', async() => {
-        const id = 9;
+        const id = newCreatedProductId;
         const response = await request(app)
         .delete(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
         .set('Authorization', 'Bearer ' + token)
