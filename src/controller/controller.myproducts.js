@@ -80,7 +80,7 @@ const dataProductAll = async (req, res) => {
         // memangil semua data di tabel product dan foreign keynya 
         const getDataProductAll = await Product.findAll(options)
 
-        if (!getDataProductAll) {
+        if (!getDataProductAll || getDataProductAll.length === 0) {
             return res.status(404).json(response.error(404, 'Product not found'))
         }
     
