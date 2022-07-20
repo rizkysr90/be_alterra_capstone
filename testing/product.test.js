@@ -42,67 +42,40 @@ describe('Endpoint product Get ById', () => {
     })
 })
 
-describe('Endpoint product Get by Search name', () => {
-    const search = 'Honda Beat Vario 2017 Bekas'
-    // Positif Test
-    test('Get By search product name success', async() => {
-        const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}/search?search=${search}`)
-        .set('Authorization', 'Bearer ' + token)
-        const {code, data} = response.body
-        expect(code).toBe(200);
-    })
-
-    // Negatif Test
-    test('Get By search product name tidak ditemukan', async() => {
-        const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}/search?search=test`)
-        .set('Authorization', 'Bearer ' + token)
-        const {code, message} = response.body
-        expect(code).toBe(401);
-        expect(message).toBe('name test Tidak Ditemukan');
-    })
-})
 
 describe('Endpoint product Get by All', () => {
     // Positif Test
     test('Get By All product success', async() => {
         const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}?page=1`)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}?page=1&row=10`)
+        .set('Authorization', 'Bearer ' + token)
+        const {code, data} = response.body
+        expect(code).toBe(200);
+    })
+
+    test('Get By All Category product success', async() => {
+        const response = await request(app)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}?page=1&row=10&category=1`)
+        .set('Authorization', 'Bearer ' + token)
+        const {code, data} = response.body
+        expect(code).toBe(200);
+    })
+
+    test('Get By Search Name product success', async() => {
+        const response = await request(app)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}?page=1&row=10&search=AIRism`)
         .set('Authorization', 'Bearer ' + token)
         const {code, data} = response.body
         expect(code).toBe(200);
     })
 
     // Negatif Test
-    test('Get By All product not found', async() => {
+    test('Get By All product Array Kosong', async() => {
         const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}?page=100`)
-        .set('Authorization', 'Bearer ' + token)
-        const {code, message} = response.body
-        expect(code).toBe(404)
-        expect(message).toBe('Product not found');
-    })
-})
-
-describe('Endpoint product Get by category', () => {
-    // Positif Test
-    test('Get By category product success', async() => {
-        const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}/category?category=1&page=1`)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}?page=100&row=10`)
         .set('Authorization', 'Bearer ' + token)
         const {code, data} = response.body
-        expect(code).toBe(200);
-    })
-
-    // Negatif Test
-    test('Get By category product Tidak ditemukan', async() => {
-        const id = 200
-        const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}/category?category=${id}&page=1`)
-        .set('Authorization', 'Bearer ' + token)
-        const {code, message} = response.body
-        expect(code).toBe(401)
-        expect(message).toBe(`id category ${id} Tidak Ditemukan`);
+        expect(code).toBe(200)
+        expect.not.arrayContaining(code)
     })
 })

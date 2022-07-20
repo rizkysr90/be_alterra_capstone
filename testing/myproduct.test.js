@@ -21,7 +21,16 @@ beforeAll(function(done) {
       // Positif Test
         test('Get By All myproduct success', async() => {
             const response = await request(app)
-            .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}?page=1`)
+            .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}?page=1row=10`)
+            .set('Authorization', 'Bearer ' + token)
+            
+            const {code, data} = response.body
+            expect(code).toBe(200);
+        })
+
+        test('Get By All Terhual myproduct success', async() => {
+            const response = await request(app)
+            .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}?page=1row=10&status=false&isActive=true`)
             .set('Authorization', 'Bearer ' + token)
             
             const {code, data} = response.body
@@ -31,7 +40,7 @@ beforeAll(function(done) {
         // Negatif Test
         test('Get By All myproduct not found', async() => {
             const response = await request(app)
-            .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}?page=100`)
+            .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}?page=100&row=10&status=true&isActive=true`)
             .set('Authorization', 'Bearer ' + token)
             const {code, message} = response.body
             expect(code).toBe(404)
@@ -59,28 +68,6 @@ describe('Endpoint myproduct Get By id', () => {
         expect(code).toBe(401)
         expect(message).toBe(`id ${id} Tidak Ditemukan`);
     })
-})
-
-describe('Endpoint myproduct Terjual', () => {
-    // Positif Test
-    // masterdata status harus false
-    test('Get terjual myproduct success', async() => {
-        const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/terjual?page=1`)
-        .set('Authorization', 'Bearer ' + token)
-        const {code, data} = response.body
-        expect(code).toBe(200);
-    })
-
-    // Negatif Test
-    test('Get terjual myproduct not found', async() => {
-       const response = await request(app)
-       .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/terjual?page=100`)
-       .set('Authorization', 'Bearer ' + token)
-       const {code, message} = response.body
-       expect(code).toBe(404)
-       expect(message).toBe(`Product not found`);
-   })
 })
 
 describe('Endpoint myproduct Create', () => {
@@ -134,7 +121,7 @@ describe('Endpoint myproduct Create', () => {
 
 describe('Endpoint myproduct update', () => {
     // Positif Test
-    const id = 11;
+    const id = 9;
     test('update with image myproduct Success', async() => {
         const response = await request(app)
         .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
@@ -200,7 +187,7 @@ describe('Endpoint myproduct update', () => {
     }, 50000)
 
     test('update with image myproduct Failed image = 0 or image > 4', async() => {
-    const id = 11
+    const id = 9
         const response = await request(app)
         .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
         .set('content-type', 'multipart/form-data')
@@ -229,7 +216,7 @@ describe('Endpoint myproduct update', () => {
 describe('Endpoint myproduct delete', () => {
     // Positif Test
     test('delete myproduct Success', async() => {
-        const id = 11;
+        const id = 9;
         const response = await request(app)
         .delete(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
         .set('Authorization', 'Bearer ' + token)

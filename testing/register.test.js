@@ -7,7 +7,7 @@ describe('Endpoint register user ', () => {
         const response = await request(app)
         .post(`${process.env.BASE_URL}/${process.env.URL_ROUTER_REGISTER}`)
         .send({
-                email : "ta11a1est@gmail.com",
+                email : "test@gmail.com",
                 password : "test123456",
                 name : "test"
             })
