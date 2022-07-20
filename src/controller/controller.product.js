@@ -116,7 +116,7 @@ const getProducById = async (req, res) => {
         // memangil satu data by id di tabel product dan foreign keynya
         const getDataProducTById = await Product.findOne(options)
 
-        if (!getDataProducTById) {
+        if (!getDataProducTById || getDataProducTById.length === 0) {
             res.status(404).json(response.error(404, 'Product not found'))
         }
 
