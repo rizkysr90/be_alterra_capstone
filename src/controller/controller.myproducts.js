@@ -12,10 +12,7 @@ const removeFileUploadedByMulter = (files) => {
     }
     
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> Modifikasi integrasi testing yang telah di fix
 
 const dataProductAll = async (req, res) => {
     try{
