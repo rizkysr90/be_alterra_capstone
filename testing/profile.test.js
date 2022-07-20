@@ -35,21 +35,21 @@ describe('Endpoint Profile Update', () => {
         expect(data).toBe('Success update data')
     })
 
-    test('update profile user Image', async() => {
-        const response = await request(app)
-        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PROFILE}/${id}`)
-        .set('content-type', 'multipart/form-data')
-        .set('Authorization', 'Bearer ' + token)
-        .field('name', 'Rizky')
-        .field('city_id', 1)
-        .field('phone_number', '085696241231')
-        .field('address', 'Kota')
-        .attach('profile_picture', `${__dirname}/upload.jpg`)
+    // test('update profile user Image', async() => {
+    //     const response = await request(app)
+    //     .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PROFILE}/${id}`)
+    //     .set('content-type', 'multipart/form-data')
+    //     .set('Authorization', 'Bearer ' + token)
+    //     .field('name', 'Rizky')
+    //     .field('city_id', 1)
+    //     .field('phone_number', '085696241231')
+    //     .field('address', 'Kota')
+    //     .attach('profile_picture', `${__dirname}/upload.jpg`)
 
-        const {code, data} = response.body
-        expect(code).toBe(200);
-        expect(data).toBe('Success update data')
-    })
+    //     const {code, data} = response.body
+    //     expect(code).toBe(200);
+    //     expect(data).toBe('Success update data')
+    // })
 
 
     // Negatif Test
