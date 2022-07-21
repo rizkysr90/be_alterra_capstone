@@ -82,13 +82,13 @@ describe('Endpoint Create Categories', () => {
         const {code, data} = response.body
         expect(code).toBe(201)
         expect(data).toBe('Succes add data')
-    })
+    },50000)
 })
 
 
 describe('Endpoint Update Categories', () => {
     // Positif test
-    const id = 4;
+    const id = 2;
     test('Update Categories success', async() => {
         const response = await request(app)
         .put(`${process.env.BASE_URL}${process.env.URL_ROUTER_CATEGORIES}/${id}`)
@@ -97,7 +97,6 @@ describe('Endpoint Update Categories', () => {
         .field('name', 'Baju')
         .field('isActive', false)
         .attach('image', `${__dirname}/Pengertian-Bahasa-Pemrograman.jpeg`)
-
         const {code, data} = response.body
         
         expect(code).toBe(201)
@@ -134,7 +133,7 @@ describe('Endpoint Update Categories', () => {
 
 describe('Endpoint Delete Categories', () => {
     // Positif test
-    const id = 4;
+    const id = 2;
     test('Delete Categories success', async() => {
         const response = await request(app)
         .delete(`${process.env.BASE_URL}${process.env.URL_ROUTER_CATEGORIES}/${id}`)

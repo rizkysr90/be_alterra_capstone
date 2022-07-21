@@ -42,9 +42,9 @@ describe('Endpoint product Get ById', () => {
     })
 
     test('Get By Id product Tidak Ditemukan', async() => {
-        const id = 100;
+        const id = "asd";
         const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}/${null}`)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}/${id}`)
         .set('Authorization', 'Bearer ' + token)
         const {code, message} = response.body
         expect(code).toBe(500);
@@ -92,19 +92,21 @@ describe('Endpoint product Get by All', () => {
 
 describe('Endpoint product Get ById', () => {
     // Positif test
-    const id = 7
+    const id = 8
     test('Get By Id product success', async() => {
         const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}${process.env.URL_ROUTER_ONPROCESS}/${id}`)
+        .get(`${process.env.BASE_URL}${process.env.URL_ROUTER_PRODUCT}/${process.env.URL_ROUTER_ONPROCESS}/${id}`)
         .set('Authorization', 'Bearer ' + token)
 
         const {code, data} = response.body
-        expect(code).toBe(200)
+
+        expect(response.status).toBe(200)
     })
     // Negatif Test
     test('Get By Id product success', async() => {
+        let id = "abc"
         const response = await request(app)
-        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}${process.env.URL_ROUTER_ONPROCESS}/${null}`)
+        .get(`${process.env.BASE_URL}${process.env.URL_ROUTER_PRODUCT}/${process.env.URL_ROUTER_ONPROCESS}/${id}`)
         .set('Authorization', 'Bearer ' + token)
 
         const {code, message} = response.body
