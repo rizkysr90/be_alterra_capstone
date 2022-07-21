@@ -124,3 +124,102 @@ describe('put endpoint /sales/orders/:order_id',() => {
         expect(code).toBe(401)
     })
 })
+
+describe('PUT /sales/verify:order_id',() => {
+    test('it should be failed to update order because send is_done only accept 0 <= is_done <= 1',async () => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_ORDER_SELLER}/verify/3`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            'is_done' : 100
+          })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        const {code, data} = response.body
+        expect(code).toBe(400)
+    })
+    test('it should be failed to update order because order_id is abc',async () => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_ORDER_SELLER}/verify/abc`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            'is_done' : 1
+          })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        const {code, data} = response.body
+        expect(code).toBe(400)
+    })
+    test('it should be failed to update order because order_id is not found',async () => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_ORDER_SELLER}/verify/100`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            'is_done' : 1
+          })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        const {code, data} = response.body
+        expect(code).toBe(404)
+    })
+    test('it should be failed because order_id 1 is not owned by user login which is user_id 1',async () => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_ORDER_SELLER}/verify/1`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            'is_done' : 1
+          })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        const {code, data} = response.body
+        expect(code).toBe(401);
+    })
+    test('it should be failed because order_id 11 it was finished',async () => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_ORDER_SELLER}/verify/11`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            'is_done' : 1
+          })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        const {code, data} = response.body
+        expect(code).toBe(401);
+    })
+    test('it should be failed because order_id 4 status still null',async () => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_ORDER_SELLER}/verify/4`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            'is_done' : 1
+          })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        const {code, data} = response.body
+        expect(code).toBe(401);
+    })
+    test('it should be success when seller failed to finish the order',async () => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_ORDER_SELLER}/verify/12`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            'is_done' : 0
+          })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        const {code, data} = response.body
+        expect(code).toBe(200);
+    })
+    test('it should be success when seller success to finish the order',async () => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_ORDER_SELLER}/verify/13`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            'is_done' : 1
+          })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        const {code, data} = response.body
+        expect(code).toBe(200);
+    })
+})

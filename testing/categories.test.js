@@ -143,7 +143,7 @@ describe('Endpoint Delete Categories', () => {
 
         expect(code).toBe(200)
         expect(data).toBe(`Data Category dengan id ${id} Berhasil Dihapus`)
-    })
+    },50000)
     // Negatif Test
     test('Delete Categories id_category Tidak Ditemukan', async() => {
         const response = await request(app)
