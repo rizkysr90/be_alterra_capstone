@@ -56,7 +56,10 @@ const getAllOrder = async (req,res) => {
                 },
             ],
             offset : page,
-            limit : row
+            limit : row,
+            order: [
+                ['updatedAt', 'DESC'],
+            ]
 
         }
         if (statusOrder !== undefined && !isNaN(statusOrder) 

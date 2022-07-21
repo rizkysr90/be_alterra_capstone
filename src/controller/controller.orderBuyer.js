@@ -97,6 +97,9 @@ module.exports = {
 
 
             const options = {
+                order: [
+                    ['updatedAt', 'DESC'],
+                ],
                 where : {
                     buyer_id : idUser
                 },
@@ -162,7 +165,7 @@ module.exports = {
             } else {
                 options.where.is_done = null;
             }
-
+            
             const findOrder = await Order.findAll(options);
             return res.status(200).json(response.success(200,findOrder));
         } catch (error) {
