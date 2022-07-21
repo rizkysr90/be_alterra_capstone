@@ -89,4 +89,13 @@ describe('Endpoint Profile Get ById', () => {
         expect(code).toBe(404);
         expect(message).toBe('User not found')
     })
+
+    test('Get By Id Internal Server', async() => {
+        const response = await request(app)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PROFILE}/${null}`)
+        .set('Authorization', 'Bearer ' + token)
+        const {code, message} = response.body
+        expect(code).toBe(500);
+        expect(message).toBe('Internal Server Error')
+    })
 })
