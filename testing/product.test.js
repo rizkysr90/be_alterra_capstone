@@ -95,7 +95,7 @@ describe('Endpoint product Get ById', () => {
     const id = 8
     test('Get By Id product success', async() => {
         const response = await request(app)
-        .get(`${process.env.BASE_URL}${process.env.URL_ROUTER_PRODUCT}/${process.env.URL_ROUTER_ONPROCESS}/${id}`)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}/${process.env.URL_ROUTER_ONPROCESS}/${id}`)
         .set('Authorization', 'Bearer ' + token)
 
         const {code, data} = response.body
@@ -106,7 +106,7 @@ describe('Endpoint product Get ById', () => {
     test('Get By Id product success', async() => {
         let id = "abc"
         const response = await request(app)
-        .get(`${process.env.BASE_URL}${process.env.URL_ROUTER_PRODUCT}/${process.env.URL_ROUTER_ONPROCESS}/${id}`)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}/${process.env.URL_ROUTER_ONPROCESS}/${id}`)
         .set('Authorization', 'Bearer ' + token)
 
         const {code, message} = response.body
