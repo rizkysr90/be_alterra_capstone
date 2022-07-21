@@ -12,8 +12,8 @@
     "name" : "Yamaha Vixion 2017 Bekas",
     "price" : 6000000,
     "description" : "Yamaha Vixion 2017 terkuat di Bumi",
-    "isActive" : true,
-    "status" : true,
+    "isActive" : false,
+    "status" : false,
     "id_user": 1,
     "id_category" : 2
   },

@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev" : "nodemon ./bin/www",
+    "dev": "nodemon ./bin/www",
     "start": "node ./bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "setUpTesting": "cross-env NODE_ENV=test npx sequelize db:create && cross-env NODE_ENV=test npx sequelize-cli db:migrate && cross-env NODE_ENV=test sequelize db:seed:all",
+    "resetTest": "cross-env NODE_ENV=test npx sequelize-cli db:migrate:undo:all && cross-env NODE_ENV=test npx sequelize-cli db:migrate && cross-env NODE_ENV=test sequelize db:seed:all "
   },
   "repository": {
     "type": "git",
@@ -36,6 +38,10 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.20.1",
     "sequelize-cli": "^6.4.1",
-    "supertest": "^6.2.3"
+    "supertest": "^6.2.3",
+    "test": "^3.0.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
