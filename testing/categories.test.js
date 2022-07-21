@@ -88,7 +88,7 @@ describe('Endpoint Create Categories', () => {
 
 describe('Endpoint Update Categories', () => {
     // Positif test
-    const id = 2;
+    const id = 4;
     test('Update Categories success', async() => {
         const response = await request(app)
         .put(`${process.env.BASE_URL}${process.env.URL_ROUTER_CATEGORIES}/${id}`)
@@ -101,7 +101,19 @@ describe('Endpoint Update Categories', () => {
         
         expect(code).toBe(201)
         expect(data).toBe('Sukses update data')
-    })
+    },50000)
+    test('Update Categories Force To Internal Server Error', async() => {
+        const response = await request(app)
+        .put(`${process.env.BASE_URL}${process.env.URL_ROUTER_CATEGORIES}/abc`)
+        .set('content-type', 'multipart/form-data')
+        .set('Authorization', 'Bearer ' + token)
+        .field('name', 'Baju')
+        .field('isActive', false)
+        .attach('image', `${__dirname}/Pengertian-Bahasa-Pemrograman.jpeg`)
+        const {code, data} = response.body
+        
+        expect(code).toBe(500)
+    },50000)
 
     test('Update Categories success Not Image', async() => {
         const response = await request(app)
@@ -133,7 +145,7 @@ describe('Endpoint Update Categories', () => {
 
 describe('Endpoint Delete Categories', () => {
     // Positif test
-    const id = 2;
+    const id = 4;
     test('Delete Categories success', async() => {
         const response = await request(app)
         .delete(`${process.env.BASE_URL}${process.env.URL_ROUTER_CATEGORIES}/${id}`)

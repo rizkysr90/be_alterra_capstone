@@ -162,6 +162,7 @@ describe('Endpoint Create Order Buyer', () => {
         expect(code).toBe(400)
         expect(message).toBe('masih ada order yang belum selesai dengan jenis order yang sama di id order 1')
     })
+    
 })
 
 describe('Endpoint Gel All Order Buyer', () => {
