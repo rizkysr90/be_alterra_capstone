@@ -159,7 +159,6 @@ module.exports = {
                 // isDone 1 = selesai terjual
                 // isDone 0 = selesai dibatalkan
                 options.where.is_done = isDone;
-                console.log('HELLO');
             } else {
                 options.where.is_done = null;
             }

@@ -18,6 +18,22 @@ beforeAll(function(done) {
         });
   });
 
+describe('GET /product',() => {
+    test('Search by name product and the data is found',async() => {
+        const response = await request(app)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}?search=honda`)
+        .set('Authorization', 'Bearer ' + token)
+        const {data} = response.body
+        expect(data.length).toBeGreaterThan(0);
+    })
+    test('Search product by id table category and the data is found',async() => {
+        const response = await request(app)
+        .get(`${process.env.BASE_URL}/${process.env.URL_ROUTER_PRODUCT}?category=1`)
+        .set('Authorization', 'Bearer ' + token)
+        const {data} = response.body
+        expect(data.length).toBeGreaterThan(0);
+    })
+})
 
 describe('Endpoint product Get ById', () => {
     // Positif test
