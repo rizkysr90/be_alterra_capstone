@@ -139,9 +139,6 @@ const onProcess = async (req,res) => {
         const idUser = req.user.id;
         const {product_id} = req.params
 
-        if (isNaN(product_id)) {
-            return res.status(400).json(response.error('400','url product_id harus integer'))
-        }
         const findOrder = await Order.findOne({
         where : {
             buyer_id : idUser,

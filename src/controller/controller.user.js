@@ -7,11 +7,7 @@ const cloudinary = require('../utility/cloudinary')
 const uploader = async (path,opts) => await cloudinary.uploadCloudinary(path,opts);
 const deleteAtCld = async (path,opts) => await cloudinary.deleteCloudinary(path);
 
-const dataUserAll = (req,res) => {
-    res.status(200).json({
-        messege : 'Succcess'
-    })
-}
+
 
 const createUser = async (req,res,next) => {
     // Pakai try catch untuk handle error by server agar bisa ditangkap
@@ -202,7 +198,6 @@ const getProfileById = async (req,res) => {
 
 
 module.exports = {
-    dataUserAll,
     createUser,
     login,
     updateProfile,

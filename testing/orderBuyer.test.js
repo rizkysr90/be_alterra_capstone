@@ -147,6 +147,22 @@ describe('Endpoint Create Order Buyer', () => {
         expect(code).toBe(400)
         expect(message).toBe('masih ada order yang belum selesai dengan jenis order yang sama di id order 1')
     })
+    test('masih ada order yang belum selesai dengan jenis order yang sama di id order', async() => {
+        const response = await request(app)
+        .post(`${process.env.BASE_URL}${process.env.URL_ROUTER_ORDER_BUYER}${process.env.URL_ROUTER_ORDER}`)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+            buyer_id: 1,
+            seller_id : 2,
+            price: 50000,
+            product_id: 8
+        })
+        .set('Accept', 'application/json')
+        const {code, message} = response.body
+        expect(code).toBe(400)
+        expect(message).toBe('masih ada order yang belum selesai dengan jenis order yang sama di id order 1')
+    })
+    
 })
 
 describe('Endpoint Gel All Order Buyer', () => {
