@@ -258,5 +258,14 @@ describe('Endpoint myproduct delete', () => {
         expect(code).toBe(401)
         expect(message).toBe(`id_product ${id} Tidak Ditemukan`)
     })
+    test('delete myproduct force internal server error', async() => {
+        const id = 'abc';
+        const response = await request(app)
+        .delete(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
+        .set('Authorization', 'Bearer ' + token)
+
+        const {code, message} = response.body
+        expect(code).toBe(500)
+    })
 
 })
