@@ -20,4 +20,4 @@ deploy to production:
   before_script:
     - gem install dpl
   script:
-    - dpl --provider=heroku --app=$HEROKU_APP_NAME_PROD --api-key=$HEROKU_API_KEY
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME_PRO --api-key=$HEROKU_API_KEY
