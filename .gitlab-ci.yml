@@ -21,3 +21,4 @@ deploy to production:
     - gem install dpl
   script:
     - dpl --provider=heroku --app=$HEROKU_APP_NAME_PROD --api-key=$HEROKU_API_KEY
+
