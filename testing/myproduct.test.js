@@ -214,25 +214,6 @@ describe('Endpoint myproduct update', () => {
         expect(message).toBe(`Gambar yang di masukan lebih dari 4`);
 
     }, 50000)
-    test('update with image force internal server error', async() => {
-        const id = "abc"
-            const response = await request(app)
-            .put(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
-            .set('content-type', 'multipart/form-data')
-            .set('Authorization', 'Bearer ' + token)
-            .field('name', 'Gian')
-            .field('price', 350000)
-            .field('description', 'jam Tangan')
-            .field('isActive', true)
-            .field('status', true)
-            .field('id_user', 1)
-            .field('id_category', 2)
-            .attach('gambar', `${__dirname}/upload.jpg`)
-            .attach('gambar', `${__dirname}/Pengertian-Bahasa-Pemrograman.jpeg`)
-    
-            const {code, message} = response.body
-            expect(code).toBe(500);
-        }, 50000)
 })
 
 describe('Endpoint myproduct delete', () => {
@@ -257,15 +238,6 @@ describe('Endpoint myproduct delete', () => {
         const {code, message} = response.body
         expect(code).toBe(401)
         expect(message).toBe(`id_product ${id} Tidak Ditemukan`)
-    })
-    test('delete myproduct force internal server error', async() => {
-        const id = 'abc';
-        const response = await request(app)
-        .delete(`${process.env.BASE_URL}/${process.env.URL_ROUTER_MYPRODUCT}/${id}`)
-        .set('Authorization', 'Bearer ' + token)
-
-        const {code, message} = response.body
-        expect(code).toBe(500)
     })
 
 })
