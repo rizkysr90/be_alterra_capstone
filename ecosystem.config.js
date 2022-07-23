@@ -1,7 +1,7 @@
 module.exports = {
     apps : [{
       name: "secondhand_app",
-      script: "./bin/www",
+      script: "bin/www",
       instances: "max",
       env: {
         NODE_ENV: "development",
