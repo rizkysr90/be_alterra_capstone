@@ -74,16 +74,4 @@ describe('Endpoint Get id Notifications', () => {
         expect(code).toBe(500)
         expect(message).toBe('Internal Server Error')
     })
-    test('Patch notifikasi gagal karna tidak memiliki akses', async() => {
-        const response = await request(app)
-        .patch(`${process.env.BASE_URL}${process.env.URL_ROUTER_NOTIFICATION}/2`)
-        .set('Authorization', 'Bearer ' + token)
-        .send({
-            status : 1
-        })
-        .set('Accept', 'application/json')
-
-        const {code, message} = response.body
-        expect(code).toBe(401)
-    })
 })

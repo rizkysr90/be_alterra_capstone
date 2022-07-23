@@ -3,10 +3,5 @@
         "notification_type_id" : 1,
         "product_id" : 2,
         "order_id" : null
-    },
-    {
-        "notification_type_id" : 1,
-        "product_id" : 5,
-        "order_id" : null
     }
 ]
