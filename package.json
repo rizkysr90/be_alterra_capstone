@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./bin/www",
-    "start": "node ./bin/www",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "test": "jest",
     "setUpTesting": "cross-env NODE_ENV=test npx sequelize db:create && cross-env NODE_ENV=test npx sequelize-cli db:migrate && cross-env NODE_ENV=test sequelize db:seed:all",
     "resetTest": "cross-env NODE_ENV=test npx sequelize-cli db:migrate:undo:all && cross-env NODE_ENV=test npx sequelize-cli db:migrate && cross-env NODE_ENV=test sequelize db:seed:all "
@@ -36,6 +36,7 @@
     "passport-jwt": "^4.0.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
+    "pm2": "^5.2.0",
     "sequelize": "^6.20.1",
     "sequelize-cli": "^6.4.1",
     "supertest": "^6.2.3",
