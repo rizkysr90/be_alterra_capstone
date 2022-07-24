@@ -24,9 +24,15 @@ const update = () => {
         body('id_category', 'Id Category Harus Di Isi').notEmpty().toInt()
     ]
 }
+const getById = () => {
+    return [
+        param('id','product id harus integer').isInt()
+    ]
+}
 
 
 module.exports = {
     create,
-    update
+    update,
+    getById
 }
