@@ -7,7 +7,8 @@ const fs = require('fs')
 const removeFileUploadedByMulter = (files) => {
     if (files || files.length !== 0) {
         files.forEach((file) => {
-            fs.unlinkSync(file.path);
+            console.log(file)
+            fs.unlinkSync('/',file.path);
         })
     }
     
