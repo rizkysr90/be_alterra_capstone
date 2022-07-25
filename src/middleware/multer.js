@@ -15,6 +15,7 @@ const storage = multer.diskStorage({
 });
 
 const MulterError = (err, req, res, next) => {
+    console.log(err);
     const makeResponseObj = {
         location : err.field
     }
@@ -27,7 +28,7 @@ const MulterError = (err, req, res, next) => {
             return res.status(400).json(response.error(400,makeResponseObj));
         }
         if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-            console.log('unxpected multer')
+        console.log('inside multer')
             makeResponseObj.message = 'Format Gambar Hanya bisa Jpg, Png, jpeg';
             return res.status(400).json(response.error(400,makeResponseObj));
         } else {
@@ -40,19 +41,15 @@ const MulterError = (err, req, res, next) => {
 }
 const fileFilterImage = (req,file,cb) => {
     // Tipe file yang valid
-    try {
         const validType = ['image/jpg','image/png','image/jpeg'];
         // Cek,apakah tipe file yang diupload sesuai
         if (!validType.includes(file.mimetype)) {
             // Return agar tidak melanjutkan fungsinya
             cb(null,false);
-           return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE'))
-        } 
-        cb(null,true);
-    } catch (error) {
-        console.log(error)
-    }
-       
+            return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE'))
+        } else {
+            cb(null,true);
+        }
 
     
 } 
@@ -64,11 +61,30 @@ const upload = multer({
     }
    
 })
+const uploadSingle = multer({
+    storage: storage,
+    fileFilter:fileFilterImage,
+    limits: {
+        fileSize: 2000000
+    }
+   
+}).single('profile_picture');
+
+const uploadSingleMiddleware = (req,res) => {
+    uploadSingle(req,res,function(err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json(response.error(400,err.code));
+        } else if (err) {
+            return res.status(500).json(response.error(500,'Internal Server Error'))
+        }
+    })
+}
 
   
 
 
 module.exports = {
     upload,
-    MulterError
+    MulterError,
+    uploadSingleMiddleware
 }
