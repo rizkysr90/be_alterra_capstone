@@ -15,7 +15,6 @@ const storage = multer.diskStorage({
 });
 
 const MulterError = (err, req, res, next) => {
-    console.log(err);
     const makeResponseObj = {
         location : err.field
     }
@@ -41,6 +40,7 @@ const MulterError = (err, req, res, next) => {
 }
 const fileFilterImage = (req,file,cb) => {
     // Tipe file yang valid
+    try {
         const validType = ['image/jpg','image/png','image/jpeg'];
         // Cek,apakah tipe file yang diupload sesuai
         if (!validType.includes(file.mimetype)) {
@@ -49,6 +49,10 @@ const fileFilterImage = (req,file,cb) => {
            return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE'))
         } 
         cb(null,true);
+    } catch (error) {
+        console.log(error)
+    }
+       
 
     
 } 
