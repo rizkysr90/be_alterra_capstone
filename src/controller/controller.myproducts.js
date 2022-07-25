@@ -174,6 +174,7 @@ const createDataProduct = async (req, res) => {
                 const requiredData = ["phone_number","address","name","city_id"]
                 if (requiredData.includes(props)) {
                     // Function remove ada dipaling atas
+                    console.log('cek profile data')
                     removeFileUploadedByMulter(req.files);
                     return res.status(401).json(response.error(401,'Anda tidak memiliki akses,lengkapi profile terlebih dahulu'));
                 }
@@ -187,6 +188,7 @@ const createDataProduct = async (req, res) => {
         
         // error headling jika gambar yang dimasukan tidak ada tau lebih dari 4
         if (files.length > 4 || files.length === 0) {
+            console.log('FILE KUANTITAS')
             // Function remove ada dipaling atas
             removeFileUploadedByMulter(req.files);
             return res.status(401).json(response.error(401, 'Gambar yang di masukan tidak boleh kosong dan lebih dari 4'))
@@ -204,6 +206,8 @@ const createDataProduct = async (req, res) => {
         }
         // Melakukan validasi apakah user yang mengupload produk = user yang login
         if (id_user !== dataUserFromJWT.id ) {
+            console.log('data gak valid')
+
             // Function remove ada dipaling atas
             removeFileUploadedByMulter(req.files);
             return res.status(401).json(response.error(401,'Anda tidak memiliki akses'));
@@ -215,6 +219,7 @@ const createDataProduct = async (req, res) => {
             }
         })
         if (!findCategory) {
+            console.log('data gak valid')
             // Function remove ada dipaling atas
             removeFileUploadedByMulter(req.files);
             return res.status(400).json(response.error(400,'id_category tidak valid / tidak ditemukan'));
@@ -224,6 +229,7 @@ const createDataProduct = async (req, res) => {
         
         // error headling jika database product gagal di buat di database
         if (!createProduct) {
+            console.log('gagal create product')
             // Function remove ada dipaling atas
             removeFileUploadedByMulter(req.files);
             return res.status(404).json(response.error(404,'Data Product Gagal dibuat'));
@@ -273,6 +279,7 @@ const createDataProduct = async (req, res) => {
         const createImagesProduct = await Product_image.bulkCreate(dataMyProductImagesInsertDatabase)
 
         if (!createImagesProduct) {
+            console.log('gagal create image product product')
             // Function remove ada dipaling atas
             removeFileUploadedByMulter(req.files);
             res.status(404).json(response.error(404, 'Data Images Product Gagal Dibuat'))
