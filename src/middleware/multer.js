@@ -22,13 +22,13 @@ const MulterError = (err, req, res, next) => {
     // Mendapatkan Error multer dari filed MulterError
     console.log('MASOKKKKK')
     if (err instanceof multer.MulterError) {
-        console.log('inside multer')
+        console.log('inside multer limit file size')
         if (err.code === 'LIMIT_FILE_SIZE') {
             makeResponseObj.message = 'file terlalu besar,maksimal 2mb';
             return res.status(400).json(response.error(400,makeResponseObj));
         }
         if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-        console.log('inside multer')
+        console.log('inside multer unexpected file')
             makeResponseObj.message = 'Format Gambar Hanya bisa Jpg, Png, jpeg';
             return res.status(400).json(response.error(400,makeResponseObj));
         } else {
@@ -61,30 +61,11 @@ const upload = multer({
     }
    
 })
-const uploadSingle = multer({
-    storage: storage,
-    fileFilter:fileFilterImage,
-    limits: {
-        fileSize: 2000000
-    }
-   
-}).single('profile_picture');
-
-const uploadSingleMiddleware = (req,res) => {
-    uploadSingle(req,res,function(err) {
-        if (err instanceof multer.MulterError) {
-            return res.status(400).json(response.error(400,err.code));
-        } else if (err) {
-            return res.status(500).json(response.error(500,'Internal Server Error'))
-        }
-    })
-}
 
   
 
 
 module.exports = {
     upload,
-    MulterError,
-    uploadSingleMiddleware
+    MulterError
 }
