@@ -43,9 +43,10 @@ const fileFilterImage = (req,file,cb) => {
         if (!validType.includes(file.mimetype)) {
             // Return agar tidak melanjutkan fungsinya
             cb(null,false);
-           return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE'))
-        } 
-        cb(null,true);
+            cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE'))
+        }  else {
+            cb(null,true);
+        }
 
     
 } 
