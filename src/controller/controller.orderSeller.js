@@ -249,6 +249,13 @@ const updateOrder = async (req,res) => {
 const verifyOrder = async (req,res) => {
     try {
         const {is_done : isDone} = req.body;
+        if (isDone < 0 || isDone > 1 ) {
+            return res.status(400).json(response.error(500,'is_done harus bernilai 0 atau 1'))
+        }
+        if (req.params.order_id !== undefined && isNaN(req.params.order_id)) {
+            // order_id tidak boleh string / harus integer
+            return res.status(400).json(response.error(400,'order id tidak boleh string'))
+        }
         const {order_id : orderId} = req.params;
         const {id : userId} = req.user;
         const findOrder = await Order.findOne({

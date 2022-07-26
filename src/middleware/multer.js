@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const fileLocation = './public/static/images';
+        const fileLocation = 'public/static/images';
         if (!fs.existsSync(fileLocation)) fs.mkdirSync(fileLocation, { recursive: true });
         cb(null, fileLocation);
     },
@@ -20,12 +20,15 @@ const MulterError = (err, req, res, next) => {
         location : err.field
     }
     // Mendapatkan Error multer dari filed MulterError
+    console.log('MASOKKKKK')
     if (err instanceof multer.MulterError) {
+        console.log('inside multer limit file size')
         if (err.code === 'LIMIT_FILE_SIZE') {
             makeResponseObj.message = 'file terlalu besar,maksimal 2mb';
             return res.status(400).json(response.error(400,makeResponseObj));
         }
         if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+        console.log('inside multer unexpected file')
             makeResponseObj.message = 'Format Gambar Hanya bisa Jpg, Png, jpeg';
             return res.status(400).json(response.error(400,makeResponseObj));
         } else {
@@ -43,9 +46,10 @@ const fileFilterImage = (req,file,cb) => {
         if (!validType.includes(file.mimetype)) {
             // Return agar tidak melanjutkan fungsinya
             cb(null,false);
-           return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE'))
-        } 
-        cb(null,true);
+            return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE'))
+        } else {
+            cb(null,true);
+        }
 
     
 } 
