@@ -17,6 +17,12 @@ const getAllCategory = async (req, res) => {
     };
 
     const getAllCategory = await Category.findAll(options);
+
+    if (!getAllCategory) {
+      return res
+        .status(404)
+        .json(response.error(404, 'Category not found'));
+    }
     return res.status(200).json(response.success(200, getAllCategory));
   } catch (err) {
     console.log(err);
@@ -58,6 +64,9 @@ const getCategoryById = async (req, res) => {
 
     const getCategoryById = await Category.findOne(options);
 
+    if (!getCategoryById) {
+      return res.status(404).json(response.error(404, 'Category not found'));
+    }
 
     return res.status(200).json(response.success(200, getCategoryById));
   } catch (err) {
@@ -208,9 +217,18 @@ const deleteCategoryById = async (req, res) => {
       },
     };
 
-    await Category.destroy(options);
+    const deleteCategory = await Category.destroy(options);
 
-    
+    if (deleteCategory === 0) {
+      return res
+        .status(404)
+        .json(
+          response.error(
+            404,
+            `Data Category dengan id ${id_category} Gagal Dihapus`
+          )
+        );
+    }
     if (idnull.image_public_id !== null) {
       // Delete previous image in cloudinary
         await deleteAtCld(idnull.image_public_id);

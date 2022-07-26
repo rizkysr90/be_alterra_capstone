@@ -88,7 +88,7 @@ const getbyIdNotifikasi = async (req,res) => {
         }
     
         if(getDataNotifikasiAll.dataValues.user_id !== dataUserFromJWT.id){
-            return res.status(401).json(response.error(401, 'Anda Tidak Memiliki Akses'))
+            return res.status(404).json(response.error(404, 'Anda Tidak Memiliki Akses'))
         }
         
         await Notification.update(
